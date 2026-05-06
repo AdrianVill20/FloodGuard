@@ -1,0 +1,7 @@
+{
+  "name": "floodguard_ionic",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

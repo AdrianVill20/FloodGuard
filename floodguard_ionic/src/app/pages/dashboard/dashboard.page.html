@@ -1,0 +1,96 @@
+<!-- ============================================================
+     FloodGuard ASEAN — LGU Dashboard
+     ============================================================ -->
+
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-title>
+      📊 LGU Dashboard
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/report">
+        <ion-icon name="megaphone-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- SUMMARY CARDS -->
+  <div class="summary-grid">
+
+    <ion-card color="danger" class="summary-card">
+      <ion-card-content>
+        <div class="summary-number">{{ summary.HIGH }}</div>
+        <div class="summary-label">🚨 HIGH</div>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card color="warning" class="summary-card">
+      <ion-card-content>
+        <div class="summary-number">{{ summary.MEDIUM }}</div>
+        <div class="summary-label">⚠️ MEDIUM</div>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card color="success" class="summary-card">
+      <ion-card-content>
+        <div class="summary-number">{{ summary.LOW }}</div>
+        <div class="summary-label">ℹ️ LOW</div>
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading-box" *ngIf="isLoading">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p>Loading reports...</p>
+  </div>
+
+  <!-- REPORTS LIST -->
+  <ion-card *ngIf="!isLoading">
+    <ion-card-header>
+      <ion-card-title>Incoming Citizen Reports</ion-card-title>
+      <ion-card-subtitle>
+        {{ reports.length }} messages processed
+      </ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let report of reports; let i = index">
+
+          <ion-badge
+            slot="start"
+            [color]="getUrgencyColor(report.urgency)">
+            {{ report.urgency }}
+          </ion-badge>
+
+          <ion-label>
+            <h3>{{ report.message }}</h3>
+            <p>
+              📍 {{ report.location || 'Location not detected' }} &nbsp;|&nbsp;
+              🌐 {{ report.language }}
+            </p>
+            <p class="alert-text">{{ report.alert }}</p>
+          </ion-label>
+
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- REFRESH BUTTON -->
+  <ion-button
+    expand="block"
+    color="primary"
+    fill="outline"
+    (click)="loadDashboard()"
+    [disabled]="isLoading">
+    <ion-icon name="refresh-outline" slot="start"></ion-icon>
+    Refresh Reports
+  </ion-button>
+
+</ion-content>
