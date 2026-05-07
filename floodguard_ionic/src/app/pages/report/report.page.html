@@ -2,134 +2,159 @@
      FloodGuard ASEAN — Citizen Flood Reporting Page
      ============================================================ -->
 
-<ion-header>
-  <ion-toolbar color="primary">
+<ion-header [translucent]="false">
+  <ion-toolbar>
     <ion-title>
-      🌊 FloodGuard ASEAN
+      <span class="report-title">📢 Report a Flood</span>
     </ion-title>
     <ion-buttons slot="end">
-      <ion-button routerLink="/dashboard">
-        <ion-icon name="grid-outline"></ion-icon>
+      <ion-button routerLink="/dashboard" fill="clear">
+        <ion-icon name="stats-chart-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content [fullscreen]="false" class="report-content">
 
-  <!-- HERO SECTION -->
-  <div class="hero-section">
-    <h2>Report a Flood</h2>
-    <p>Send a message in Cebuano, Tagalog, or English.
-       We will classify it and send you an alert.</p>
+  <!-- Hero Section -->
+  <div class="report-hero">
+    <h2>Your Report Helps Save Lives</h2>
+    <p>Send a message in Cebuano, Tagalog, or English. We'll analyze it instantly and send you an alert.</p>
   </div>
 
-  <!-- MESSAGE INPUT CARD -->
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Your Message</ion-card-title>
-      <ion-card-subtitle>
-        Example: "Baha na sa Lahug tabang!"
-      </ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
+  <!-- Input Card -->
+  <div class="input-card">
+    <h3>Describe the Situation</h3>
+    
+    <ion-textarea
+      [(ngModel)]="message"
+      placeholder="Example: 'Baha na sa Lahug tabang!' or 'High water in Lahug area'"
+      rows="5"
+      fill="outline"
+      counter="true"
+      maxlength="200"
+      class="message-input">
+    </ion-textarea>
 
-      <ion-textarea
-        [(ngModel)]="message"
-        placeholder="Type your flood report here..."
-        rows="4"
+    <!-- Error Message -->
+    <div *ngIf="errorMsg" class="error-message">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      {{ errorMsg }}
+    </div>
+
+    <!-- Character Count -->
+    <div class="char-count">
+      <span>{{ message ? message.length : 0 }} / 200</span>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="button-group">
+      <ion-button
+        expand="block"
+        fill="solid"
+        color="primary"
+        (click)="submitReport()"
+        [disabled]="!message || isLoading"
+        class="submit-btn">
+        <ion-icon name="send-outline" slot="start"></ion-icon>
+        {{ isLoading ? 'Analyzing...' : 'Submit Report' }}
+      </ion-button>
+
+      <ion-button
+        expand="block"
         fill="outline"
-        counter="true"
-        maxlength="200">
-      </ion-textarea>
-
-      <!-- Error message -->
-      <ion-text color="danger" *ngIf="errorMsg">
-        <p>{{ errorMsg }}</p>
-      </ion-text>
-
-      <!-- Buttons -->
-      <div class="button-row">
-        <ion-button
-          expand="block"
-          color="primary"
-          (click)="submitReport()"
-          [disabled]="isLoading">
-          <ion-icon name="send-outline" slot="start"></ion-icon>
-          {{ isLoading ? 'Analyzing...' : 'Submit Report' }}
-        </ion-button>
-
-        <ion-button
-          expand="block"
-          color="medium"
-          fill="outline"
-          (click)="clearForm()"
-          *ngIf="result">
-          <ion-icon name="refresh-outline" slot="start"></ion-icon>
-          Clear
-        </ion-button>
-      </div>
-
-    </ion-card-content>
-  </ion-card>
-
-  <!-- LOADING SPINNER -->
-  <div class="loading-box" *ngIf="isLoading">
-    <ion-spinner name="crescent" color="primary"></ion-spinner>
-    <p>Analyzing your message...</p>
+        (click)="clearForm()"
+        *ngIf="message"
+        class="clear-btn">
+        <ion-icon name="close-outline" slot="start"></ion-icon>
+        Clear
+      </ion-button>
+    </div>
   </div>
 
-  <!-- RESULT CARD -->
-  <ion-card *ngIf="result" class="result-card">
-    <ion-card-header [color]="getUrgencyColor()">
-      <ion-card-title style="color: white;">
-        {{ result.urgency === 'HIGH'   ? '🚨 HIGH URGENCY'   :
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-card">
+      <ion-spinner name="dots"></ion-spinner>
+      <p>Analyzing your message...</p>
+      <p class="loading-hint">Processing location, language & urgency level</p>
+    </div>
+  </div>
+
+  <!-- Result Card -->
+  <div *ngIf="result && !isLoading" class="result-card" [class]="'urgency-' + result.urgency.toLowerCase()">
+    
+    <div class="result-header">
+      <div class="result-title">
+        {{ result.urgency === 'HIGH'   ? '🚨 HIGH URGENCY' :
            result.urgency === 'MEDIUM' ? '⚠️ MODERATE URGENCY' :
-                                         'ℹ️ LOW URGENCY' }}
-      </ion-card-title>
-    </ion-card-header>
+           '✅ LOW URGENCY' }}
+      </div>
+    </div>
 
-    <ion-card-content>
-
+    <div class="result-body">
       <!-- Detection Results -->
-      <ion-list lines="none">
-        <ion-item>
-          <ion-icon name="location-outline" slot="start" color="primary">
-          </ion-icon>
-          <ion-label>
-            <h3>Location Detected</h3>
-            <p>{{ result.location || 'Not detected' }}</p>
-          </ion-label>
-        </ion-item>
+      <div class="detection-grid">
+        
+        <div class="detection-item">
+          <div class="detection-icon">📍</div>
+          <div class="detection-content">
+            <div class="detection-label">Location</div>
+            <div class="detection-value">{{ result.location || 'Not detected' }}</div>
+          </div>
+        </div>
 
-        <ion-item>
-          <ion-icon name="flag-outline" slot="start" color="warning">
-          </ion-icon>
-          <ion-label>
-            <h3>Urgency Level</h3>
-            <p>{{ result.urgency }}</p>
-          </ion-label>
-        </ion-item>
+        <div class="detection-item">
+          <div class="detection-icon">⚡</div>
+          <div class="detection-content">
+            <div class="detection-label">Urgency Level</div>
+            <div class="detection-value">{{ result.urgency }}</div>
+          </div>
+        </div>
 
-        <ion-item>
-          <ion-icon name="language-outline" slot="start" color="success">
-          </ion-icon>
-          <ion-label>
-            <h3>Language Detected</h3>
-            <p>{{ result.language }}</p>
-          </ion-label>
-        </ion-item>
-      </ion-list>
+        <div class="detection-item">
+          <div class="detection-icon">🌐</div>
+          <div class="detection-content">
+            <div class="detection-label">Language</div>
+            <div class="detection-value">
+              {{ result.language === 'cebuano' ? 'Cebuano' :
+                 result.language === 'tagalog' ? 'Tagalog' : 'English' }}
+            </div>
+          </div>
+        </div>
 
-      <ion-item-divider></ion-item-divider>
-
-      <!-- Generated Alert -->
-      <div class="alert-box">
-        <h3>📢 Generated Alert</h3>
-        <p>{{ result.alert }}</p>
       </div>
 
-    </ion-card-content>
-  </ion-card>
+      <!-- Generated Alert Section -->
+      <div class="alert-section">
+        <h4>📢 Generated Alert</h4>
+        <div class="alert-box">
+          {{ result.alert }}
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <ion-button
+        expand="block"
+        fill="outline"
+        (click)="clearForm()">
+        <ion-icon name="refresh-outline" slot="start"></ion-icon>
+        Submit Another Report
+      </ion-button>
+    </div>
+
+  </div>
+
+  <!-- Help Section -->
+  <div class="help-section">
+    <h3>Tips for Better Reports</h3>
+    <ul>
+      <li><strong>Mention the location:</strong> "Baha sa Lahug" or "Flooding in Guadalupe area"</li>
+      <li><strong>Describe severity:</strong> "Mataas na ang tubig" (high water) or "Heavy flooding"</li>
+      <li><strong>Use your language:</strong> We support Cebuano, Tagalog, and English</li>
+      <li><strong>Be specific:</strong> Mention barangay or landmark names when possible</li>
+    </ul>
+  </div>
 
 </ion-content>

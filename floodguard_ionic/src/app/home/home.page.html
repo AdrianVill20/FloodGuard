@@ -1,20 +1,77 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="false">
   <ion-toolbar>
     <ion-title>
-      Blank
+      <span class="app-title">🌊 FloodGuard</span>
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [fullscreen]="false" class="app-content">
+  <!-- Hero Section -->
+  <div class="hero-container">
+    <div class="hero-content">
+      <div class="hero-icon">🌊</div>
+      <h1 class="hero-title">Real-time Flood Alerts</h1>
+      <p class="hero-subtitle">Report flooding in your community and receive critical safety alerts in Cebuano, Tagalog, or English.</p>
+    </div>
+  </div>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+  <!-- Features Grid -->
+  <div class="features-section">
+    <h2 class="section-title">How It Works</h2>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📍</div>
+        <h3>Location Detection</h3>
+        <p>We automatically identify the area from your message</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Instant Processing</h3>
+        <p>Your report is analyzed in seconds</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">📢</div>
+        <h3>Smart Alerts</h3>
+        <p>Get personalized evacuation instructions</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🌐</div>
+        <h3>Multi-language</h3>
+        <p>Report in your preferred language</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA Buttons -->
+  <div class="action-section">
+    <ion-button 
+      expand="block" 
+      fill="solid" 
+      color="primary"
+      routerLink="/report"
+      size="large">
+      <ion-icon name="megaphone-outline" slot="start"></ion-icon>
+      Report a Flood
+    </ion-button>
+    
+    <ion-button 
+      expand="block" 
+      fill="outline"
+      routerLink="/dashboard"
+      size="large">
+      <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
+      View Dashboard
+    </ion-button>
+  </div>
+
+  <!-- Info Section -->
+  <div class="info-section">
+    <h3>About FloodGuard ASEAN</h3>
+    <p>FloodGuard combines satellite monitoring with citizen reports to provide real-time flood risk assessment and actionable guidance for the people of Cebu. Stay informed, stay safe.</p>
   </div>
 </ion-content>
