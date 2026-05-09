@@ -4,7 +4,7 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'report',
+    redirectTo: 'dashboard',
     pathMatch: 'full'
   },
   {
@@ -14,6 +14,14 @@ const routes: Routes = [
   {
     path: 'dashboard',
     loadChildren: () => import('./pages/dashboard/dashboard.module').then( m => m.DashboardPageModule)
+  },
+  {
+    path: 'map',
+    loadChildren: () => import('./pages/flood-map/flood-map.module').then( m => m.FloodMapPageModule)
+  },
+  {
+    path: 'alerts',
+    loadChildren: () => import('./pages/alerts/alerts.module').then( m => m.AlertsPageModule)
   },
 ];
 

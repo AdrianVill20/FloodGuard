@@ -1,99 +1,104 @@
-<!-- ============================================================
-     FloodGuard ASEAN — LGU Dashboard
-     ============================================================ -->
-
-<ion-header [translucent]="false">
+<ion-header class="fg-header">
   <ion-toolbar>
-    <ion-title>
-      <span class="dashboard-title">📊 Dashboard</span>
-    </ion-title>
+    <ion-title>FloodGuard ASEAN</ion-title>
     <ion-buttons slot="end">
-      <ion-button routerLink="/report" fill="clear">
-        <ion-icon name="add-circle-outline" slot="icon-only"></ion-icon>
+      <ion-button routerLink="/alerts" aria-label="Open alerts">
+        <ion-icon name="notifications-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
+  <div class="watch-banner">
+    <ion-icon name="warning-outline"></ion-icon>
+    <span>Active flood watch - Barangay Mabolo. Last updated 09:42 AM</span>
+  </div>
 </ion-header>
 
-<ion-content [fullscreen]="false" class="dashboard-content">
-  
-  <!-- Status Summary -->
-  <div class="summary-section">
-    <h2 class="section-title">Active Reports</h2>
-    <div class="summary-grid">
+<ion-content class="dashboard-shell">
+  <section class="intro">
+    <p>Good Morning, Officer Cruz</p>
+    <h1>Situation Dashboard</h1>
+    <span>Sunday, May 10, 2026 · Cebu City</span>
+  </section>
 
-      <div class="summary-stat danger">
-        <div class="stat-value">{{ summary.HIGH || 0 }}</div>
-        <div class="stat-label">High</div>
-      </div>
+  <section class="metric-grid">
+    <article class="metric-card danger">
+      <ion-icon name="radio-outline"></ion-icon>
+      <strong>{{ activeAlerts }}</strong>
+      <span>Active Alerts</span>
+    </article>
+    <article class="metric-card warning">
+      <ion-icon name="rainy-outline"></ion-icon>
+      <strong>{{ highRiskBarangays }}</strong>
+      <span>High-Risk Barangays</span>
+    </article>
+    <article class="metric-card safe">
+      <ion-icon name="leaf-outline"></ion-icon>
+      <strong>{{ averageNdvi | number:'1.2-2' }}</strong>
+      <span>Average Province NDVI</span>
+    </article>
+  </section>
 
-      <div class="summary-stat warning">
-        <div class="stat-value">{{ summary.MEDIUM || 0 }}</div>
-        <div class="stat-label">Medium</div>
-      </div>
-
-      <div class="summary-stat success">
-        <div class="stat-value">{{ summary.LOW || 0 }}</div>
-        <div class="stat-label">Low</div>
-      </div>
-
+  <section class="risk-panel">
+    <div>
+      <span>Flood Risk Level</span>
+      <strong>High</strong>
+      <small>3.8m current level</small>
     </div>
-  </div>
+    <div><strong>+20cm</strong><small>Next 2 hours</small></div>
+    <div><strong>5 Brgys</strong><small>At Risk</small></div>
+  </section>
 
-  <!-- Loading State -->
-  <div *ngIf="isLoading" class="loading-state">
-    <ion-spinner name="dots"></ion-spinner>
-    <p>Loading latest reports...</p>
-  </div>
-
-  <!-- Reports List -->
-  <div *ngIf="!isLoading" class="reports-section">
-    <h2 class="section-title">
-      Recent Reports
-      <span class="badge">{{ reports.length }}</span>
-    </h2>
-
-    <div *ngIf="reports.length === 0" class="empty-state">
-      <div class="empty-icon">📭</div>
-      <h3>No reports yet</h3>
-      <p>Check back later for incoming citizen reports</p>
+  <section class="chart-panel">
+    <div class="section-heading">
+      <h2>Deforestation vs Flood Reports</h2>
+      <span>6 months</span>
     </div>
+    <svg viewBox="0 0 320 150" role="img" aria-label="Deforestation and flood incident trend chart">
+      <line x1="0" y1="28" x2="320" y2="28"></line>
+      <line x1="0" y1="70" x2="320" y2="70"></line>
+      <line x1="0" y1="112" x2="320" y2="112"></line>
+      <polyline class="line ndvi" [attr.points]="getTrendPoints('ndviLoss')"></polyline>
+      <polyline class="line reports" [attr.points]="getTrendPoints('floodReports')"></polyline>
+      <text *ngFor="let trend of trends; let i = index" [attr.x]="(i / (trends.length - 1)) * 300" y="142">{{ trend.month }}</text>
+    </svg>
+    <div class="legend"><span>NDVI loss</span><span>Flood reports</span></div>
+  </section>
 
-    <div *ngIf="reports.length > 0" class="reports-list">
-      <div *ngFor="let report of reports; let i = index" class="report-item" [class.high]="report.urgency === 'HIGH'">
-        
-        <div class="report-header">
-          <div class="report-meta">
-            <ion-badge [color]="getUrgencyColor(report.urgency)">
-              {{ report.urgency }}
-            </ion-badge>
-            <span class="report-location">📍 {{ report.location || 'Unknown' }}</span>
-          </div>
-          <span class="report-lang">{{ report.language }}</span>
-        </div>
-
-        <p class="report-message">{{ report.message }}</p>
-
-        <div class="report-footer">
-          <div class="alert-preview">
-            <strong>Alert:</strong> {{ report.alert }}
-          </div>
-        </div>
-
-      </div>
+  <section class="map-preview">
+    <div class="section-heading">
+      <h2>Flood Zone Map</h2>
+      <ion-button size="small" routerLink="/map">Full Map</ion-button>
     </div>
-  </div>
+    <div class="mini-map">
+      <svg viewBox="0 0 100 70">
+        <polygon *ngFor="let feature of mapData?.features"
+          [attr.points]="feature.geometry.coordinates[0].join(' ')"
+          [class]="feature.properties.risk_level.toLowerCase()">
+        </polygon>
+      </svg>
+    </div>
+  </section>
 
-  <!-- Refresh Action -->
-  <div class="action-footer">
-    <ion-button
-      expand="block"
-      fill="outline"
-      (click)="loadDashboard()"
-      [disabled]="isLoading">
-      <ion-icon name="refresh-outline" slot="start"></ion-icon>
-      Refresh Reports
-    </ion-button>
-  </div>
-
+  <section class="activity-feed">
+    <div class="section-heading">
+      <h2>Recent NLP Activity</h2>
+      <ion-button fill="clear" size="small" routerLink="/alerts">Review All</ion-button>
+    </div>
+    <article class="activity-item" *ngFor="let report of reports.slice(0, 3)" [class]="report.urgency.toLowerCase()">
+      <div><strong>{{ report.urgency }}</strong><time>{{ getActivityTime(report.timestamp) }}</time></div>
+      <p>"{{ report.rawInput }}"</p>
+      <footer><span>{{ report.location }}, {{ report.city }}</span><mark>{{ report.status }}</mark></footer>
+    </article>
+  </section>
 </ion-content>
+
+<ion-footer class="fg-tabs">
+  <ion-toolbar>
+    <ion-buttons>
+      <ion-button routerLink="/dashboard" class="active"><ion-icon name="home-outline"></ion-icon><span>Home</span></ion-button>
+      <ion-button routerLink="/map"><ion-icon name="location-outline"></ion-icon><span>Map</span></ion-button>
+      <ion-button routerLink="/report"><ion-icon name="chatbubble-outline"></ion-icon><span>Reports</span></ion-button>
+      <ion-button routerLink="/alerts"><ion-icon name="alert-circle-outline"></ion-icon><span>Alerts</span></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

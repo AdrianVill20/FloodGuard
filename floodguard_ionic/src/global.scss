@@ -393,3 +393,29 @@ ion-spinner {
 .slide-in {
   animation: slideIn var(--transition-base);
 }
+
+.fg-tabs ion-toolbar {
+  --background: #fff;
+  --min-height: 64px;
+}
+
+.fg-tabs ion-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  width: 100%;
+}
+
+.fg-tabs ion-button {
+  --color: #8aa0ad;
+  min-height: 56px;
+  font-size: 0.66rem;
+}
+
+.fg-tabs ion-button.active {
+  --color: #0b4363;
+}
+
+.fg-tabs ion-button::part(native) {
+  flex-direction: column;
+  gap: 4px;
+}

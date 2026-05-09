@@ -1,0 +1,60 @@
+<ion-header class="alerts-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button routerLink="/dashboard" aria-label="Back to dashboard"><ion-icon name="arrow-back-outline"></ion-icon></ion-button>
+    </ion-buttons>
+    <ion-title>Emergency Alert Hub</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="alerts-shell">
+  <section class="hub-hero">
+    <div class="alert-icon"><ion-icon name="warning-outline"></ion-icon></div>
+    <span>Emergency Notification</span>
+    <h1>Flood Alert</h1>
+    <p>Processed citizen reports prioritized for operator action.</p>
+  </section>
+
+  <section class="controls">
+    <ion-searchbar [(ngModel)]="query" placeholder="Search location, language, or message" show-clear-button="focus"></ion-searchbar>
+    <div class="filter-row">
+      <ion-button size="small" [class.active]="filter === 'ALL'" (click)="setFilter('ALL')">All</ion-button>
+      <ion-button size="small" [class.active]="filter === 'HIGH'" (click)="setFilter('HIGH')">High</ion-button>
+      <ion-button size="small" [class.active]="filter === 'MEDIUM'" (click)="setFilter('MEDIUM')">Medium</ion-button>
+      <ion-button size="small" [class.active]="filter === 'LOW'" (click)="setFilter('LOW')">Low</ion-button>
+    </div>
+    <ion-segment [value]="sortMode" (ionChange)="setSortMode($any($event.detail.value))">
+      <ion-segment-button value="urgency">Urgency</ion-segment-button>
+      <ion-segment-button value="time">Time</ion-segment-button>
+      <ion-segment-button value="location">Location</ion-segment-button>
+    </ion-segment>
+  </section>
+
+  <section class="alert-grid">
+    <article class="alert-card" *ngFor="let alert of filteredAlerts" [class]="alert.urgency.toLowerCase()">
+      <header><ion-badge>{{ alert.urgency }}</ion-badge><time>{{ getTime(alert.timestamp) }}</time></header>
+      <dl>
+        <div><dt>Raw Input</dt><dd>"{{ alert.rawInput }}"</dd></div>
+        <div><dt>Detected Location</dt><dd>{{ alert.location }}, {{ alert.city }}</dd></div>
+        <div><dt>Language</dt><dd>{{ alert.language }}</dd></div>
+        <div><dt>Synthesized Output</dt><dd>{{ alert.synthesizedOutput }}</dd></div>
+      </dl>
+      <footer>
+        <ion-button size="small"><ion-icon name="megaphone-outline" slot="start"></ion-icon>Broadcast to SMS</ion-button>
+        <ion-button size="small" fill="outline" color="success"><ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>Verify</ion-button>
+        <ion-button size="small" fill="clear" color="medium"><ion-icon name="close-circle-outline" slot="start"></ion-icon>Dismiss</ion-button>
+      </footer>
+    </article>
+  </section>
+</ion-content>
+
+<ion-footer class="fg-tabs">
+  <ion-toolbar>
+    <ion-buttons>
+      <ion-button routerLink="/dashboard"><ion-icon name="home-outline"></ion-icon><span>Home</span></ion-button>
+      <ion-button routerLink="/map"><ion-icon name="location-outline"></ion-icon><span>Map</span></ion-button>
+      <ion-button routerLink="/report"><ion-icon name="chatbubble-outline"></ion-icon><span>Reports</span></ion-button>
+      <ion-button routerLink="/alerts" class="active"><ion-icon name="alert-circle-outline"></ion-icon><span>Alerts</span></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

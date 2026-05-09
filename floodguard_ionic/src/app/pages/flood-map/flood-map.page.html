@@ -1,0 +1,85 @@
+<ion-header class="map-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button routerLink="/dashboard" aria-label="Back to dashboard"><ion-icon name="arrow-back-outline"></ion-icon></ion-button>
+    </ion-buttons>
+    <ion-title>Flood Zone Map</ion-title>
+    <ion-buttons slot="end">
+      <ion-button aria-label="Layers"><ion-icon name="layers-outline"></ion-icon></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="map-shell">
+  <div class="layer-tabs">
+    <ion-button size="small" [class.active]="activeLayer === 'risk'" (click)="setLayer('risk')">Flood Risk</ion-button>
+    <ion-button size="small" [class.active]="activeLayer === 'ndvi'" (click)="setLayer('ndvi')">NDVI View</ion-button>
+    <ion-button size="small" [class.active]="activeLayer === 'alerts'" (click)="setLayer('alerts')">Active Alerts</ion-button>
+  </div>
+
+  <section class="map-canvas" aria-label="Cebu barangay risk map">
+    <div class="tile-basemap" aria-hidden="true">
+      <img *ngFor="let tile of mapTiles"
+        [src]="tile.src"
+        [style.left]="tile.left"
+        [style.top]="tile.top"
+        alt="">
+    </div>
+    <div class="map-labels" aria-hidden="true">
+      <span class="road-label one">Gov. M. Cuenco Ave</span>
+      <span class="road-label two">Archbishop Reyes Ave</span>
+      <span class="place-label mabolo">Mabolo</span>
+      <span class="place-label lahug">Lahug</span>
+      <span class="place-label talamban">Talamban</span>
+      <span class="place-label busay">Busay</span>
+    </div>
+    <svg viewBox="0 0 100 100" aria-hidden="true">
+      <polygon *ngFor="let feature of mapData?.features; let i = index"
+        [attr.points]="feature.geometry.coordinates[0].join(' ')"
+        [class]="getPolygonClass(feature)"
+        [class.selected]="selectedBarangay === i"
+        (click)="selectFeature(i)">
+      </polygon>
+    </svg>
+    <button class="report-marker" *ngFor="let alert of alerts" type="button"
+      [hidden]="activeLayer === 'ndvi'"
+      [ngStyle]="getMarkerPosition(alert)"
+      [class.high]="alert.urgency === 'HIGH'"
+      (click)="selectAlert(alert)">
+      <ion-icon name="warning-outline"></ion-icon>
+    </button>
+    <aside class="tooltip-card" *ngIf="selectedAlert && activeLayer !== 'ndvi'">
+      <strong>{{ selectedAlert.location }}</strong>
+      <p>{{ selectedAlert.synthesizedOutput }}</p>
+    </aside>
+  </section>
+
+  <section class="barangay-sheet" *ngIf="selectedFeature as feature">
+    <div>
+      <h1>Barangay {{ feature.properties.barangay }}</h1>
+      <span>{{ feature.properties.city }}</span>
+    </div>
+    <ion-badge [class]="feature.properties.risk_level.toLowerCase()">{{ feature.properties.risk_level }} Risk</ion-badge>
+    <dl>
+      <div><dt>{{ feature.properties.flood_depth_m }} meters</dt><dd>Flood Level</dd></div>
+      <div><dt>{{ feature.properties.flood_timing }}</dt><dd>Flood Timing</dd></div>
+      <div><dt>{{ feature.properties.evacuation_center }}</dt><dd>Evacuation Center</dd></div>
+      <div><dt>{{ feature.properties.ndvi_score }}</dt><dd>NDVI Score</dd></div>
+    </dl>
+    <div class="sheet-actions">
+      <ion-button>Evacuation Route</ion-button>
+      <ion-button color="danger" routerLink="/alerts">Send Alert</ion-button>
+    </div>
+  </section>
+</ion-content>
+
+<ion-footer class="fg-tabs">
+  <ion-toolbar>
+    <ion-buttons>
+      <ion-button routerLink="/dashboard"><ion-icon name="home-outline"></ion-icon><span>Home</span></ion-button>
+      <ion-button routerLink="/map" class="active"><ion-icon name="location-outline"></ion-icon><span>Map</span></ion-button>
+      <ion-button routerLink="/report"><ion-icon name="chatbubble-outline"></ion-icon><span>Reports</span></ion-button>
+      <ion-button routerLink="/alerts"><ion-icon name="alert-circle-outline"></ion-icon><span>Alerts</span></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

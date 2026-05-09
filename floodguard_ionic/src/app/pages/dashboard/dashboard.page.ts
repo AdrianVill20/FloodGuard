@@ -1,36 +1,24 @@
-// ============================================================
-// src/app/pages/dashboard/dashboard.page.ts
-// ============================================================
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
-import { ApiService } from '../../services/api';
+import { ApiService, FloodAlert, MapFeatureCollection, TrendPoint } from '../../services/api';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, RouterModule]
+  imports: [CommonModule, FormsModule, IonicModule, RouterModule],
 })
 export class DashboardPage implements OnInit {
-
-  reports  : any[]   = [];
-  isLoading: boolean = false;
-  summary  : any     = { HIGH: 0, MEDIUM: 0, LOW: 0 };
-
-  // Sample reports for LGU dashboard demo
-  sampleMessages = [
-    "Baha na sa Lahug tabang!",
-    "Mataas ang tubig sa Talisay papataas pa",
-    "Ulan na sa Busay gamay pa",
-    "Naiipit kami sa Ermita baha emergency",
-    "Water rising in Lapu-Lapu road flooded",
-    "Ambon sa Talamban basa ang dalan",
-  ];
+  reports: FloodAlert[] = [];
+  mapData?: MapFeatureCollection;
+  trends: TrendPoint[] = [];
+  activeAlerts = 0;
+  highRiskBarangays = 0;
+  averageNdvi = 0;
 
   constructor(private api: ApiService) {}
 
@@ -39,22 +27,36 @@ export class DashboardPage implements OnInit {
   }
 
   loadDashboard() {
-    this.isLoading = true;
-    this.api.classifyBatch(this.sampleMessages).subscribe({
-      next: (response) => {
-        this.reports   = response.data;
-        this.summary   = response.summary;
-        this.isLoading = false;
-      },
-      error: () => {
-        this.isLoading = false;
-      }
+    this.api.getAlerts().subscribe((alerts) => {
+      this.reports = alerts;
+      this.activeAlerts = alerts.filter((alert) => alert.urgency === 'HIGH').length;
     });
+    this.api.getMapData().subscribe((mapData) => {
+      this.mapData = mapData;
+      this.highRiskBarangays = mapData.features.filter((feature) =>
+        ['HIGH', 'CRITICAL'].includes(feature.properties.risk_level)
+      ).length;
+      this.averageNdvi = mapData.features.reduce((sum, feature) => sum + feature.properties.ndvi_score, 0) / mapData.features.length;
+    });
+    this.api.getTrendData().subscribe((trends) => this.trends = trends);
   }
 
-  getUrgencyColor(urgency: string): string {
-    if (urgency === 'HIGH')   return 'danger';
-    if (urgency === 'MEDIUM') return 'warning';
-    return 'success';
+  getTrendPoints(key: 'ndviLoss' | 'floodReports'): string {
+    if (!this.trends.length) return '';
+    const max = Math.max(...this.trends.map((point) => Math.max(point.ndviLoss, point.floodReports)));
+    return this.trends.map((point, index) => {
+      const x = (index / (this.trends.length - 1)) * 300;
+      const y = 116 - (point[key] / max) * 94;
+      return `${x},${y}`;
+    }).join(' ');
+  }
+
+  getActivityTime(timestamp: string): string {
+    return new Intl.DateTimeFormat('en-PH', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: 'Asia/Manila',
+    }).format(new Date(timestamp));
   }
 }

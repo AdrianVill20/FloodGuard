@@ -1,0 +1,31 @@
+:host { --navy: #0b4363; --red: #ef5356; --orange: #f8b23c; --yellow: #f3d35c; --ink: #14334a; --muted: #738b99; }
+.alerts-header ion-toolbar { --background: #d42027; --color: #fff; }
+.alerts-shell { --background: #f4f8fb; color: var(--ink); }
+.alerts-shell::part(scroll) { padding-bottom: 82px; }
+.hub-hero { padding: 28px 18px 30px; color: #fff; text-align: center; background: linear-gradient(180deg, #ef5356, #ed5559); }
+.alert-icon { display: grid; place-items: center; width: 76px; height: 76px; margin: 0 auto 14px; border: 3px solid rgba(255,255,255,.78); border-radius: 50%; font-size: 2rem; }
+.hub-hero span { display: block; font-size: .72rem; text-transform: uppercase; opacity: .86; }
+.hub-hero h1 { margin: 10px 0; font-size: clamp(2rem, 9vw, 3.3rem); font-weight: 500; letter-spacing: 0; text-transform: uppercase; }
+.hub-hero p { max-width: 560px; margin: 0 auto; color: #fff; opacity: .9; }
+.controls { padding: 14px; background: #fff; }
+ion-searchbar { --box-shadow: none; --background: #eef5f7; --border-radius: 8px; padding: 0; }
+.filter-row { display: flex; gap: 8px; margin: 12px 0; overflow-x: auto; }
+.filter-row ion-button { --background: #eef5f7; --color: var(--muted); --border-radius: 999px; min-width: max-content; }
+.filter-row ion-button.active { --background: var(--navy); --color: #fff; }
+ion-segment { --background: #eef5f7; }
+.alert-grid { display: grid; gap: 12px; padding: 14px; }
+.alert-card { padding: 14px; border: 1px solid #dfe9ef; border-left: 5px solid var(--yellow); border-radius: 8px; background: #fff; box-shadow: 0 10px 24px rgba(18,52,76,.08); }
+.alert-card.high { border-left-color: var(--red); }
+.alert-card.medium { border-left-color: var(--orange); }
+.alert-card header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.alert-card ion-badge { padding: 7px 10px; border-radius: 5px; background: var(--yellow); color: #513b00; }
+.alert-card.high ion-badge { background: var(--red); color: #fff; }
+.alert-card.medium ion-badge { background: var(--orange); color: #462e00; }
+.alert-card time { color: var(--muted); font-size: .76rem; }
+dl { display: grid; gap: 10px; margin: 14px 0; }
+dt { color: var(--muted); font-size: .7rem; font-weight: 800; text-transform: uppercase; }
+dd { margin: 3px 0 0; color: var(--ink); font-size: .86rem; line-height: 1.4; }
+footer { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 8px; }
+footer ion-button { --border-radius: 6px; min-height: 42px; font-size: .72rem; }
+@media (min-width: 820px) { .alerts-shell::part(scroll) { max-width: 1100px; margin: 0 auto; } .alert-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 420px) { footer { grid-template-columns: 1fr; } }
