@@ -1,17 +1,20 @@
+#flood-map {
+  height: 450px;
+  width: 100%;
+  z-index: 1;
+}
+
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
-  margin-bottom: 16px;
+  padding: 8px;
 }
 
 .summary-card {
   margin: 0;
   text-align: center;
-
-  ion-card-content {
-    padding: 12px 8px;
-  }
+  ion-card-content { padding: 12px 8px; }
 }
 
 .summary-number {
@@ -24,6 +27,38 @@
   font-size: 0.75rem;
   color: white;
   margin-top: 4px;
+}
+
+.tab-row {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  justify-content: center;
+}
+
+.map-legend {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px;
+  background: white;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  &.high     { background: #e74c3c; }
+  &.moderate { background: #f39c12; }
+  &.low      { background: #27ae60; }
 }
 
 .loading-box {

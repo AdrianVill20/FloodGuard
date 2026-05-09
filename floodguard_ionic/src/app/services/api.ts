@@ -1,5 +1,5 @@
 // ============================================================
-// src/app/services/api.service.ts
+// src/app/services/api.ts
 // FloodGuard ASEAN — Django API Connection
 // ============================================================
 
@@ -12,7 +12,6 @@ import { Observable } from 'rxjs';
 })
 export class ApiService {
 
-  // Your Django backend URL
   private baseUrl = 'http://127.0.0.1:8000/api';
 
   constructor(private http: HttpClient) {}
@@ -30,5 +29,21 @@ export class ApiService {
   // Classify batch messages
   classifyBatch(messages: string[]): Observable<any> {
     return this.http.post(`${this.baseUrl}/classify/batch/`, { messages });
+  }
+
+  // Get all barangay flood risk data
+  getBarangays(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/barangays/`);
+  }
+
+  // Get barangay GeoJSON for map
+  getBarangayMap(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/barangays/map/`);
+  }
+
+  // Get pixel data for sub-barangay heatmap
+  getBarangayPixels(barangayName: string): Observable<any> {
+    const encoded = encodeURIComponent(barangayName);
+    return this.http.get(`${this.baseUrl}/barangays/pixels/${encoded}/`);
   }
 }

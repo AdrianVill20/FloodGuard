@@ -1,0 +1,802 @@
+[
+  {
+    "barangay": "Adlaon",
+    "flood_risk": 0.3998,
+    "risk_level": "LOW",
+    "ndvi_2020": 0.3279,
+    "ndvi_2010": 0.2345,
+    "ndvi_change": -0.0934,
+    "deforested": false,
+    "elevation_m": 454.9
+  },
+  {
+    "barangay": "Agsungot",
+    "flood_risk": 0.4962,
+    "risk_level": "LOW",
+    "ndvi_2020": 0.3724,
+    "ndvi_2010": 0.1908,
+    "ndvi_change": -0.1816,
+    "deforested": false,
+    "elevation_m": 308.4
+  },
+  {
+    "barangay": "Apas",
+    "flood_risk": 0.8093,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.1873,
+    "ndvi_2010": 0.1451,
+    "ndvi_change": -0.0422,
+    "deforested": false,
+    "elevation_m": 31.5
+  },
+  {
+    "barangay": "Babag",
+    "flood_risk": 0.3635,
+    "risk_level": "LOW",
+    "ndvi_2020": 0.3617,
+    "ndvi_2010": 0.1676,
+    "ndvi_change": -0.1941,
+    "deforested": false,
+    "elevation_m": 485.5
+  },
+  {
+    "barangay": "Bacayan",
+    "flood_risk": 0.7751,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.2667,
+    "ndvi_2010": 0.2169,
+    "ndvi_change": -0.0498,
+    "deforested": false,
+    "elevation_m": 45.4
+  },
+  {
+    "barangay": "Banilad",
+    "flood_risk": 0.7731,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.2033,
+    "ndvi_2010": 0.1176,
+    "ndvi_change": -0.0857,
+    "deforested": false,
+    "elevation_m": 56.4
+  },
+  {
+    "barangay": "Basak Pardo",
+    "flood_risk": 0.8424,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.1999,
+    "ndvi_2010": 0.0251,
+    "ndvi_change": -0.1748,
+    "deforested": false,
+    "elevation_m": 4.7
+  },
+  {
+    "barangay": "Basak San Nicolas",
+    "flood_risk": 0.851,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.1485,
+    "ndvi_2010": 0.0227,
+    "ndvi_change": -0.1258,
+    "deforested": false,
+    "elevation_m": 6.3
+  },
+  {
+    "barangay": "Binaliw",
+    "flood_risk": 0.5775,
+    "risk_level": "MODERATE",
+    "ndvi_2020": 0.3851,
+    "ndvi_2010": 0.0993,
+    "ndvi_change": -0.2858,
+    "deforested": false,
+    "elevation_m": 205.4
+  },
+  {
+    "barangay": "Bonbon",
+    "flood_risk": 0.5115,
+    "risk_level": "MODERATE",
+    "ndvi_2020": 0.3729,
+    "ndvi_2010": 0.2674,
+    "ndvi_change": -0.1055,
+    "deforested": false,
+    "elevation_m": 293.4
+  },
+  {
+    "barangay": "Budla-An",
+    "flood_risk": 0.5802,
+    "risk_level": "MODERATE",
+    "ndvi_2020": 0.3682,
+    "ndvi_2010": 0.1844,
+    "ndvi_change": -0.1838,
+    "deforested": false,
+    "elevation_m": 194.1
+  },
+  {
+    "barangay": "Buhisan",
+    "flood_risk": 0.554,
+    "risk_level": "MODERATE",
+    "ndvi_2020": 0.3707,
+    "ndvi_2010": 0.2815,
+    "ndvi_change": -0.0892,
+    "deforested": false,
+    "elevation_m": 217.7
+  },
+  {
+    "barangay": "Bulacao",
+    "flood_risk": 0.6751,
+    "risk_level": "MODERATE",
+    "ndvi_2020": 0.2894,
+    "ndvi_2010": 0.0077,
+    "ndvi_change": -0.2817,
+    "deforested": false,
+    "elevation_m": 138.5
+  },
+  {
+    "barangay": "Buot-Taup Pardo",
+    "flood_risk": 0.4357,
+    "risk_level": "LOW",
+    "ndvi_2020": 0.3794,
+    "ndvi_2010": 0.2408,
+    "ndvi_change": -0.1386,
+    "deforested": false,
+    "elevation_m": 356.3
+  },
+  {
+    "barangay": "Busay",
+    "flood_risk": 0.5456,
+    "risk_level": "MODERATE",
+    "ndvi_2020": 0.3573,
+    "ndvi_2010": 0.214,
+    "ndvi_change": -0.1433,
+    "deforested": false,
+    "elevation_m": 230.2
+  },
+  {
+    "barangay": "Calamba",
+    "flood_risk": 0.8537,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.1121,
+    "ndvi_2010": 0.0007,
+    "ndvi_change": -0.1114,
+    "deforested": false,
+    "elevation_m": 13.0
+  },
+  {
+    "barangay": "Cambinocot",
+    "flood_risk": 0.5592,
+    "risk_level": "MODERATE",
+    "ndvi_2020": 0.3914,
+    "ndvi_2010": 0.2702,
+    "ndvi_change": -0.1212,
+    "deforested": false,
+    "elevation_m": 255.4
+  },
+  {
+    "barangay": "Camputhaw",
+    "flood_risk": 0.8316,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.1356,
+    "ndvi_2010": 0.0672,
+    "ndvi_change": -0.0684,
+    "deforested": false,
+    "elevation_m": 22.2
+  },
+  {
+    "barangay": "Capitol Site",
+    "flood_risk": 0.8342,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.1349,
+    "ndvi_2010": 0.0578,
+    "ndvi_change": -0.0771,
+    "deforested": false,
+    "elevation_m": 26.9
+  },
+  {
+    "barangay": "Carreta",
+    "flood_risk": 0.8515,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.0985,
+    "ndvi_2010": 0.0523,
+    "ndvi_change": -0.0462,
+    "deforested": false,
+    "elevation_m": 5.3
+  },
+  {
+    "barangay": "Cogon Pardo",
+    "flood_risk": 0.8478,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.1679,
+    "ndvi_2010": 0.1026,
+    "ndvi_change": -0.0653,
+    "deforested": false,
+    "elevation_m": 3.8
+  },
+  {
+    "barangay": "Cogon Ramos",
+    "flood_risk": 0.8393,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.1325,
+    "ndvi_2010": 0.0361,
+    "ndvi_change": -0.0964,
+    "deforested": false,
+    "elevation_m": 11.4
+  },
+  {
+    "barangay": "Day-As",
+    "flood_risk": 0.8432,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.0654,
+    "ndvi_2010": 0.0485,
+    "ndvi_change": -0.0169,
+    "deforested": false,
+    "elevation_m": 6.1
+  },
+  {
+    "barangay": "Duljo",
+    "flood_risk": 0.8712,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.0756,
+    "ndvi_2010": 0.0142,
+    "ndvi_change": -0.0614,
+    "deforested": false,
+    "elevation_m": 5
+  },
+  {
+    "barangay": "Ermita",
+    "flood_risk": 0.8582,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.0545,
+    "ndvi_2010": 0.0376,
+    "ndvi_change": -0.0169,
+    "deforested": false,
+    "elevation_m": 6.8
+  },
+  {
+    "barangay": "Guadalupe",
+    "flood_risk": 0.7559,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.194,
+    "ndvi_2010": 0.0762,
+    "ndvi_change": -0.1178,
+    "deforested": false,
+    "elevation_m": 76.8
+  },
+  {
+    "barangay": "Guba",
+    "flood_risk": 0.4468,
+    "risk_level": "LOW",
+    "ndvi_2020": 0.3522,
+    "ndvi_2010": 0.2114,
+    "ndvi_change": -0.1408,
+    "deforested": false,
+    "elevation_m": 383.7
+  },
+  {
+    "barangay": "Hippodromo",
+    "flood_risk": 0.8356,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.136,
+    "ndvi_2010": 0.0852,
+    "ndvi_change": -0.0508,
+    "deforested": false,
+    "elevation_m": 12.4
+  },
+  {
+    "barangay": "Inayawan",
+    "flood_risk": 0.8433,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.2058,
+    "ndvi_2010": 0.1309,
+    "ndvi_change": -0.0749,
+    "deforested": false,
+    "elevation_m": 4.4
+  },
+  {
+    "barangay": "Kalubihan",
+    "flood_risk": 0.8513,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.0488,
+    "ndvi_2010": 0.0285,
+    "ndvi_change": -0.0203,
+    "deforested": false,
+    "elevation_m": 10.3
+  },
+  {
+    "barangay": "Kalunasan",
+    "flood_risk": 0.526,
+    "risk_level": "MODERATE",
+    "ndvi_2020": 0.391,
+    "ndvi_2010": 0.2422,
+    "ndvi_change": -0.1488,
+    "deforested": false,
+    "elevation_m": 243.6
+  },
+  {
+    "barangay": "Kamagayan",
+    "flood_risk": 0.8338,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.0785,
+    "ndvi_2010": 0.0433,
+    "ndvi_change": -0.0352,
+    "deforested": false,
+    "elevation_m": 10.2
+  },
+  {
+    "barangay": "Kasambagan",
+    "flood_risk": 0.8125,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.2126,
+    "ndvi_2010": 0.1696,
+    "ndvi_change": -0.043,
+    "deforested": false,
+    "elevation_m": 19.9
+  },
+  {
+    "barangay": "Kinasang-An Pardo",
+    "flood_risk": 0.6963,
+    "risk_level": "MODERATE",
+    "ndvi_2020": 0.2503,
+    "ndvi_2010": 0.0039,
+    "ndvi_change": -0.2464,
+    "deforested": false,
+    "elevation_m": 109.8
+  },
+  {
+    "barangay": "Labangon",
+    "flood_risk": 0.8565,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.119,
+    "ndvi_2010": -0.0279,
+    "ndvi_change": -0.1469,
+    "deforested": false,
+    "elevation_m": 9.6
+  },
+  {
+    "barangay": "Lahug",
+    "flood_risk": 0.7644,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.2147,
+    "ndvi_2010": 0.1296,
+    "ndvi_change": -0.0851,
+    "deforested": false,
+    "elevation_m": 63.2
+  },
+  {
+    "barangay": "Lorega",
+    "flood_risk": 0.8648,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.0521,
+    "ndvi_2010": 0.054,
+    "ndvi_change": 0.0019,
+    "deforested": false,
+    "elevation_m": 4.8
+  },
+  {
+    "barangay": "Lusaran",
+    "flood_risk": 0.5012,
+    "risk_level": "MODERATE",
+    "ndvi_2020": 0.369,
+    "ndvi_2010": 0.2207,
+    "ndvi_change": -0.1483,
+    "deforested": false,
+    "elevation_m": 314.8
+  },
+  {
+    "barangay": "Luz",
+    "flood_risk": 0.8298,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.1275,
+    "ndvi_2010": 0.1182,
+    "ndvi_change": -0.0093,
+    "deforested": false,
+    "elevation_m": 17.5
+  },
+  {
+    "barangay": "Mabini",
+    "flood_risk": 0.4933,
+    "risk_level": "LOW",
+    "ndvi_2020": 0.3904,
+    "ndvi_2010": 0.3323,
+    "ndvi_change": -0.0581,
+    "deforested": false,
+    "elevation_m": 310.3
+  },
+  {
+    "barangay": "Mabolo",
+    "flood_risk": 0.845,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.1082,
+    "ndvi_2010": 0.0735,
+    "ndvi_change": -0.0347,
+    "deforested": false,
+    "elevation_m": 7.0
+  },
+  {
+    "barangay": "Malubog",
+    "flood_risk": 0.398,
+    "risk_level": "LOW",
+    "ndvi_2020": 0.3605,
+    "ndvi_2010": 0.1626,
+    "ndvi_change": -0.1979,
+    "deforested": false,
+    "elevation_m": 409.9
+  },
+  {
+    "barangay": "Mambaling",
+    "flood_risk": 0.8597,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.1171,
+    "ndvi_2010": -0.0328,
+    "ndvi_change": -0.1499,
+    "deforested": false,
+    "elevation_m": 5.4
+  },
+  {
+    "barangay": "Pahina Central",
+    "flood_risk": 0.8663,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.0717,
+    "ndvi_2010": -0.0045,
+    "ndvi_change": -0.0762,
+    "deforested": false,
+    "elevation_m": 8.6
+  },
+  {
+    "barangay": "Pahina San Nicolas",
+    "flood_risk": 0.8712,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.0676,
+    "ndvi_2010": 0.0342,
+    "ndvi_change": -0.0334,
+    "deforested": false,
+    "elevation_m": 5.8
+  },
+  {
+    "barangay": "Pamutan",
+    "flood_risk": 0.329,
+    "risk_level": "LOW",
+    "ndvi_2020": 0.3859,
+    "ndvi_2010": 0.1168,
+    "ndvi_change": -0.2691,
+    "deforested": false,
+    "elevation_m": 468.8
+  },
+  {
+    "barangay": "Pardo",
+    "flood_risk": 0.6699,
+    "risk_level": "MODERATE",
+    "ndvi_2020": 0.2773,
+    "ndvi_2010": -0.0019,
+    "ndvi_change": -0.2792,
+    "deforested": false,
+    "elevation_m": 130.7
+  },
+  {
+    "barangay": "Pari-An",
+    "flood_risk": 0.8417,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.0473,
+    "ndvi_2010": 0.0512,
+    "ndvi_change": 0.0039,
+    "deforested": false,
+    "elevation_m": 5.7
+  },
+  {
+    "barangay": "Paril",
+    "flood_risk": 0.6037,
+    "risk_level": "MODERATE",
+    "ndvi_2020": 0.3698,
+    "ndvi_2010": 0.3259,
+    "ndvi_change": -0.0439,
+    "deforested": false,
+    "elevation_m": 205.1
+  },
+  {
+    "barangay": "Pasil",
+    "flood_risk": 0.8701,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.07,
+    "ndvi_2010": 0.0421,
+    "ndvi_change": -0.0279,
+    "deforested": false,
+    "elevation_m": 5
+  },
+  {
+    "barangay": "Pit-Os",
+    "flood_risk": 0.7363,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.2901,
+    "ndvi_2010": 0.2526,
+    "ndvi_change": -0.0375,
+    "deforested": false,
+    "elevation_m": 73.4
+  },
+  {
+    "barangay": "Pulangbato",
+    "flood_risk": 0.6604,
+    "risk_level": "MODERATE",
+    "ndvi_2020": 0.3689,
+    "ndvi_2010": 0.1826,
+    "ndvi_change": -0.1863,
+    "deforested": false,
+    "elevation_m": 122.2
+  },
+  {
+    "barangay": "Pung-Ol-Sibugay",
+    "flood_risk": 0.3572,
+    "risk_level": "LOW",
+    "ndvi_2020": 0.4007,
+    "ndvi_2010": 0.217,
+    "ndvi_change": -0.1837,
+    "deforested": false,
+    "elevation_m": 474.8
+  },
+  {
+    "barangay": "Punta Princesa",
+    "flood_risk": 0.7961,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.1975,
+    "ndvi_2010": 0.0602,
+    "ndvi_change": -0.1373,
+    "deforested": false,
+    "elevation_m": 38.9
+  },
+  {
+    "barangay": "Quiot Pardo",
+    "flood_risk": 0.7356,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.2481,
+    "ndvi_2010": 0.0165,
+    "ndvi_change": -0.2316,
+    "deforested": false,
+    "elevation_m": 78.3
+  },
+  {
+    "barangay": "Sambag I",
+    "flood_risk": 0.854,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.0959,
+    "ndvi_2010": 0.0404,
+    "ndvi_change": -0.0555,
+    "deforested": false,
+    "elevation_m": 15.0
+  },
+  {
+    "barangay": "Sambag II",
+    "flood_risk": 0.8597,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.0922,
+    "ndvi_2010": -0.0115,
+    "ndvi_change": -0.1037,
+    "deforested": false,
+    "elevation_m": 9.5
+  },
+  {
+    "barangay": "San Antonio",
+    "flood_risk": 0.8419,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.0734,
+    "ndvi_2010": 0.0133,
+    "ndvi_change": -0.0601,
+    "deforested": false,
+    "elevation_m": 8.4
+  },
+  {
+    "barangay": "San Jose",
+    "flood_risk": 0.6109,
+    "risk_level": "MODERATE",
+    "ndvi_2020": 0.3864,
+    "ndvi_2010": 0.0974,
+    "ndvi_change": -0.289,
+    "deforested": false,
+    "elevation_m": 143.8
+  },
+  {
+    "barangay": "San Nicolas Central",
+    "flood_risk": 0.8547,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.1267,
+    "ndvi_2010": 0.0001,
+    "ndvi_change": -0.1266,
+    "deforested": false,
+    "elevation_m": 7.2
+  },
+  {
+    "barangay": "San Roque",
+    "flood_risk": 0.8296,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.1025,
+    "ndvi_2010": 0.045,
+    "ndvi_change": -0.0575,
+    "deforested": false,
+    "elevation_m": 4.7
+  },
+  {
+    "barangay": "Santa Cruz",
+    "flood_risk": 0.85,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.1073,
+    "ndvi_2010": 0.0307,
+    "ndvi_change": -0.0766,
+    "deforested": false,
+    "elevation_m": 11.5
+  },
+  {
+    "barangay": "Sapangdaku",
+    "flood_risk": 0.44,
+    "risk_level": "LOW",
+    "ndvi_2020": 0.4066,
+    "ndvi_2010": 0.1967,
+    "ndvi_change": -0.2099,
+    "deforested": false,
+    "elevation_m": 325
+  },
+  {
+    "barangay": "Sawang Calero",
+    "flood_risk": 0.8584,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.1058,
+    "ndvi_2010": -0.0064,
+    "ndvi_change": -0.1122,
+    "deforested": false,
+    "elevation_m": 6.2
+  },
+  {
+    "barangay": "Sinsin",
+    "flood_risk": 0.3573,
+    "risk_level": "LOW",
+    "ndvi_2020": 0.3291,
+    "ndvi_2010": 0.2563,
+    "ndvi_change": -0.0728,
+    "deforested": false,
+    "elevation_m": 523
+  },
+  {
+    "barangay": "Sirao",
+    "flood_risk": 0.4435,
+    "risk_level": "LOW",
+    "ndvi_2020": 0.3843,
+    "ndvi_2010": 0.2594,
+    "ndvi_change": -0.1249,
+    "deforested": false,
+    "elevation_m": 380.3
+  },
+  {
+    "barangay": "Sr Santo Ni\u00f1o",
+    "flood_risk": 0.8278,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.0893,
+    "ndvi_2010": 0.0379,
+    "ndvi_change": -0.0514,
+    "deforested": false,
+    "elevation_m": 8.3
+  },
+  {
+    "barangay": "Suba Poblacion",
+    "flood_risk": 0.8735,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.059,
+    "ndvi_2010": 0.0273,
+    "ndvi_change": -0.0317,
+    "deforested": false,
+    "elevation_m": 5
+  },
+  {
+    "barangay": "Sudlon I",
+    "flood_risk": 0.3297,
+    "risk_level": "LOW",
+    "ndvi_2020": 0.3156,
+    "ndvi_2010": 0.2789,
+    "ndvi_change": -0.0367,
+    "deforested": false,
+    "elevation_m": 668.0
+  },
+  {
+    "barangay": "Sudlon II",
+    "flood_risk": 0.317,
+    "risk_level": "LOW",
+    "ndvi_2020": 0.3396,
+    "ndvi_2010": 0.2281,
+    "ndvi_change": -0.1115,
+    "deforested": false,
+    "elevation_m": 681.2
+  },
+  {
+    "barangay": "T. Padilla",
+    "flood_risk": 0.8463,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.0581,
+    "ndvi_2010": 0.0713,
+    "ndvi_change": 0.0132,
+    "deforested": false,
+    "elevation_m": 4.9
+  },
+  {
+    "barangay": "Tabunan",
+    "flood_risk": 0.3252,
+    "risk_level": "LOW",
+    "ndvi_2020": 0.3206,
+    "ndvi_2010": 0.2788,
+    "ndvi_change": -0.0418,
+    "deforested": false,
+    "elevation_m": 668.8
+  },
+  {
+    "barangay": "Tagbao",
+    "flood_risk": 0.3891,
+    "risk_level": "LOW",
+    "ndvi_2020": 0.3552,
+    "ndvi_2010": 0.2591,
+    "ndvi_change": -0.0961,
+    "deforested": false,
+    "elevation_m": 397.6
+  },
+  {
+    "barangay": "Talamban",
+    "flood_risk": 0.7496,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.2861,
+    "ndvi_2010": 0.1088,
+    "ndvi_change": -0.1773,
+    "deforested": false,
+    "elevation_m": 65.1
+  },
+  {
+    "barangay": "Taptap",
+    "flood_risk": 0.3573,
+    "risk_level": "LOW",
+    "ndvi_2020": 0.3569,
+    "ndvi_2010": 0.3062,
+    "ndvi_change": -0.0507,
+    "deforested": false,
+    "elevation_m": 516.2
+  },
+  {
+    "barangay": "Tejero",
+    "flood_risk": 0.8571,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.0445,
+    "ndvi_2010": 0.0105,
+    "ndvi_change": -0.034,
+    "deforested": false,
+    "elevation_m": 4.2
+  },
+  {
+    "barangay": "Tinago",
+    "flood_risk": 0.8432,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.0353,
+    "ndvi_2010": 0.0075,
+    "ndvi_change": -0.0278,
+    "deforested": false,
+    "elevation_m": 4
+  },
+  {
+    "barangay": "Tisa",
+    "flood_risk": 0.7802,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.2037,
+    "ndvi_2010": 0.0674,
+    "ndvi_change": -0.1363,
+    "deforested": false,
+    "elevation_m": 49.1
+  },
+  {
+    "barangay": "To-Ong Pardo",
+    "flood_risk": 0.5146,
+    "risk_level": "MODERATE",
+    "ndvi_2020": 0.3711,
+    "ndvi_2010": 0.2898,
+    "ndvi_change": -0.0813,
+    "deforested": false,
+    "elevation_m": 265.3
+  },
+  {
+    "barangay": "Zapatera",
+    "flood_risk": 0.8535,
+    "risk_level": "HIGH",
+    "ndvi_2020": 0.083,
+    "ndvi_2010": 0.0301,
+    "ndvi_change": -0.0529,
+    "deforested": false,
+    "elevation_m": 8.3
+  }
+]

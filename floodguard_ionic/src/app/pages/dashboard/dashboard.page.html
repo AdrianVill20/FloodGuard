@@ -1,12 +1,6 @@
-<!-- ============================================================
-     FloodGuard ASEAN — LGU Dashboard
-     ============================================================ -->
-
 <ion-header>
   <ion-toolbar color="dark">
-    <ion-title>
-      📊 LGU Dashboard
-    </ion-title>
+    <ion-title>📊 LGU Dashboard</ion-title>
     <ion-buttons slot="end">
       <ion-button routerLink="/report">
         <ion-icon name="megaphone-outline"></ion-icon>
@@ -15,82 +9,151 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content>
 
   <!-- SUMMARY CARDS -->
   <div class="summary-grid">
-
     <ion-card color="danger" class="summary-card">
       <ion-card-content>
         <div class="summary-number">{{ summary.HIGH }}</div>
         <div class="summary-label">🚨 HIGH</div>
       </ion-card-content>
     </ion-card>
-
     <ion-card color="warning" class="summary-card">
       <ion-card-content>
-        <div class="summary-number">{{ summary.MEDIUM }}</div>
-        <div class="summary-label">⚠️ MEDIUM</div>
+        <div class="summary-number">{{ summary.MODERATE }}</div>
+        <div class="summary-label">⚠️ MODERATE</div>
       </ion-card-content>
     </ion-card>
-
     <ion-card color="success" class="summary-card">
       <ion-card-content>
         <div class="summary-number">{{ summary.LOW }}</div>
         <div class="summary-label">ℹ️ LOW</div>
       </ion-card-content>
     </ion-card>
-
   </div>
 
-  <!-- LOADING -->
-  <div class="loading-box" *ngIf="isLoading">
-    <ion-spinner name="crescent" color="primary"></ion-spinner>
-    <p>Loading reports...</p>
+  <!-- TAB SWITCHER -->
+  <div class="tab-row">
+    <ion-button
+      [fill]="selectedTab === 'map' ? 'solid' : 'outline'"
+      color="primary" size="small"
+      (click)="switchTab('map')">
+      🗺️ Map
+    </ion-button>
+    <ion-button
+      [fill]="selectedTab === 'list' ? 'solid' : 'outline'"
+      color="primary" size="small"
+      (click)="switchTab('list')">
+      📋 Barangays
+    </ion-button>
+    <ion-button
+      [fill]="selectedTab === 'reports' ? 'solid' : 'outline'"
+      color="primary" size="small"
+      (click)="switchTab('reports')">
+      📨 Reports
+    </ion-button>
   </div>
 
-  <!-- REPORTS LIST -->
-  <ion-card *ngIf="!isLoading">
-    <ion-card-header>
-      <ion-card-title>Incoming Citizen Reports</ion-card-title>
-      <ion-card-subtitle>
-        {{ reports.length }} messages processed
-      </ion-card-subtitle>
-    </ion-card-header>
+  <!-- MAP TAB -->
+  <div *ngIf="selectedTab === 'map'">
 
-    <ion-card-content>
-      <ion-list>
-        <ion-item *ngFor="let report of reports; let i = index">
+    <!-- Selected barangay info + layer toggle -->
+    <div class="map-controls" *ngIf="selectedBarangay">
+      <div class="selected-info">
+        📍 <strong>{{ selectedBarangay }}</strong> — click dots for details
+      </div>
+      <div class="layer-toggle">
+        <ion-button
+          size="small"
+          [fill]="activeLayer === 'flood' ? 'solid' : 'outline'"
+          color="danger"
+          (click)="switchLayer('flood')">
+          🌊 Flood Risk
+        </ion-button>
+        <ion-button
+          size="small"
+          [fill]="activeLayer === 'ndvi' ? 'solid' : 'outline'"
+          color="success"
+          (click)="switchLayer('ndvi')">
+          🌿 NDVI Risk
+        </ion-button>
+        <ion-button
+          size="small"
+          fill="outline"
+          color="medium"
+          (click)="resetMap()">
+          ↩️ Reset
+        </ion-button>
+      </div>
+    </div>
 
-          <ion-badge
-            slot="start"
-            [color]="getUrgencyColor(report.urgency)">
-            {{ report.urgency }}
-          </ion-badge>
+    <div *ngIf="!selectedBarangay" class="map-hint">
+      👆 Click any barangay to see detailed flood risk zones inside it
+    </div>
 
-          <ion-label>
-            <h3>{{ report.message }}</h3>
-            <p>
-              📍 {{ report.location || 'Location not detected' }} &nbsp;|&nbsp;
-              🌐 {{ report.language }}
-            </p>
-            <p class="alert-text">{{ report.alert }}</p>
-          </ion-label>
+    <div id="flood-map"></div>
 
-        </ion-item>
-      </ion-list>
-    </ion-card-content>
-  </ion-card>
+    <!-- Legend -->
+    <div class="map-legend">
+      <span class="legend-item"><span class="dot high"></span> HIGH</span>
+      <span class="legend-item"><span class="dot moderate"></span> MODERATE</span>
+      <span class="legend-item"><span class="dot low"></span> LOW</span>
+      <span class="legend-sep">|</span>
+      <span class="legend-item"><span class="dot h1"></span> Very High</span>
+      <span class="legend-item"><span class="dot h2"></span> High</span>
+      <span class="legend-item"><span class="dot h3"></span> Medium</span>
+      <span class="legend-item"><span class="dot h4"></span> Low</span>
+    </div>
+  </div>
 
-  <!-- REFRESH BUTTON -->
-  <ion-button
-    expand="block"
-    color="primary"
-    fill="outline"
-    (click)="loadDashboard()"
-    [disabled]="isLoading">
-    <ion-icon name="refresh-outline" slot="start"></ion-icon>
-    Refresh Reports
-  </ion-button>
+  <!-- BARANGAY LIST TAB -->
+  <div *ngIf="selectedTab === 'list'" class="ion-padding">
+    <div class="loading-box" *ngIf="isLoading">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Loading barangay data...</p>
+    </div>
+    <ion-list *ngIf="!isLoading">
+      <ion-item *ngFor="let b of barangays; let i = index">
+        <ion-badge slot="start" [color]="getRiskBadgeColor(b.risk_level)">
+          {{ i + 1 }}
+        </ion-badge>
+        <ion-label>
+          <h3>{{ b.barangay }}</h3>
+          <p>
+            Risk: <strong>{{ b.risk_level }}</strong>
+            ({{ b.flood_risk }}) | Elev: {{ b.elevation_m }}m
+          </p>
+          <p>
+            NDVI 2020: {{ b.ndvi_2020 }} |
+            Deforested: {{ b.deforested ? '⚠️ Yes' : '✅ No' }}
+          </p>
+        </ion-label>
+        <ion-badge slot="end" [color]="getRiskBadgeColor(b.risk_level)">
+          {{ b.risk_level }}
+        </ion-badge>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- REPORTS TAB -->
+  <div *ngIf="selectedTab === 'reports'" class="ion-padding">
+    <div class="loading-box" *ngIf="reportLoading">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Loading reports...</p>
+    </div>
+    <ion-list *ngIf="!reportLoading">
+      <ion-item *ngFor="let report of reports">
+        <ion-badge slot="start" [color]="getUrgencyColor(report.urgency)">
+          {{ report.urgency }}
+        </ion-badge>
+        <ion-label>
+          <h3>{{ report.message }}</h3>
+          <p>📍 {{ report.location || 'Not detected' }} | 🌐 {{ report.language }}</p>
+          <p class="alert-text">{{ report.alert }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
 
 </ion-content>
