@@ -1,0 +1,172 @@
+/* ============================================================
+   FloodGuard Command Center Slate — Design Tokens
+   Import once in src/global.scss:
+     @import "./theme/floodguard.scss";
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+
+:root {
+  /* ── Surfaces ─────────────────────────────────────────── */
+  --fg-bg:           #0F172A;
+  --fg-sidebar:      #0B1220;
+  --fg-card:         #1E293B;
+  --fg-card-2:       #172033;
+  --fg-popover:      #1F2A3D;
+  --fg-border:       #1F2937;
+  --fg-border-2:     #283449;
+
+  /* ── Text ─────────────────────────────────────────────── */
+  --fg-text:         #E2E8F0;
+  --fg-text-muted:   #94A3B8;
+  --fg-text-dim:     #64748B;
+
+  /* ── Accent + Status ──────────────────────────────────── */
+  --fg-primary:      #38BDF8;
+  --fg-primary-ink:  #0F172A;
+  --fg-warning:      #F59E0B;
+  --fg-danger:       #EF4444;
+  --fg-success:      #10B981;
+  --fg-info:         #38BDF8;
+
+  /* ── Tints (15 %) ─────────────────────────────────────── */
+  --fg-primary-15:   rgba(56, 189, 248, 0.15);
+  --fg-warning-15:   rgba(245, 158,  11, 0.15);
+  --fg-danger-15:    rgba(239,  68,  68, 0.15);
+  --fg-success-15:   rgba( 16, 185, 129, 0.15);
+
+  /* ── Geometry ─────────────────────────────────────────── */
+  --fg-radius:       8px;
+  --fg-radius-lg:    12px;
+  --fg-shadow-2xl:   0 24px 48px -12px rgba(0, 0, 0, 0.55);
+  --fg-blur:         blur(8px);
+
+  /* ── Typography ───────────────────────────────────────── */
+  --fg-font-sans:    "Inter", system-ui, -apple-system, sans-serif;
+  --fg-font-mono:    "JetBrains Mono", ui-monospace, monospace;
+
+  /* ── Ionic Variable Overrides ─────────────────────────── */
+  --ion-background-color:           var(--fg-bg);
+  --ion-text-color:                 var(--fg-text);
+  --ion-color-primary:              var(--fg-primary);
+  --ion-color-primary-contrast:     var(--fg-primary-ink);
+  --ion-color-danger:               var(--fg-danger);
+  --ion-color-warning:              var(--fg-warning);
+  --ion-color-success:              var(--fg-success);
+  --ion-color-dark:                 var(--fg-sidebar);
+  --ion-card-background:            var(--fg-card);
+  --ion-item-background:            transparent;
+  --ion-toolbar-background:         var(--fg-sidebar);
+  --ion-tab-bar-background:         var(--fg-sidebar);
+  --ion-border-color:               var(--fg-border);
+  --ion-item-border-color:          var(--fg-border);
+}
+
+/* ── Base ──────────────────────────────────────────────── */
+body,
+ion-content {
+  font-family: var(--fg-font-sans);
+}
+
+/* ── Utility: Mono ────────────────────────────────────── */
+.fg-mono {
+  font-family: var(--fg-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Utility: Eyebrow ─────────────────────────────────── */
+.fg-eyebrow {
+  font-family: var(--fg-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-text-muted);
+}
+
+/* ── Utility: Chips ───────────────────────────────────── */
+.fg-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: var(--fg-font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+.fg-chip--danger  { background: var(--fg-danger-15);  color: var(--fg-danger);  border-color: rgba(239, 68,  68, 0.4); }
+.fg-chip--warning { background: var(--fg-warning-15); color: var(--fg-warning); border-color: rgba(245, 158, 11, 0.4); }
+.fg-chip--primary { background: var(--fg-primary-15); color: var(--fg-primary); border-color: rgba(56,  189, 248, 0.4); }
+.fg-chip--success { background: var(--fg-success-15); color: var(--fg-success); border-color: rgba(16,  185, 129, 0.4); }
+.fg-chip--neutral {
+  background: rgba(100, 116, 139, 0.15);
+  color: var(--fg-text-muted);
+  border-color: rgba(100, 116, 139, 0.3);
+}
+
+/* ── Utility: Glass ───────────────────────────────────── */
+.fg-glass {
+  background: color-mix(in oklab, var(--fg-card) 85%, transparent);
+  backdrop-filter: var(--fg-blur);
+  -webkit-backdrop-filter: var(--fg-blur);
+  border: 1px solid var(--fg-border);
+  border-radius: var(--fg-radius);
+  box-shadow: var(--fg-shadow-2xl);
+}
+
+/* ── Utility: Card ────────────────────────────────────── */
+.fg-card {
+  background: var(--fg-card);
+  border: 1px solid var(--fg-border);
+  border-radius: var(--fg-radius);
+}
+
+/* ── Utility: Buttons ─────────────────────────────────── */
+.fg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: var(--fg-radius);
+  font-family: var(--fg-font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: opacity 0.15s ease, box-shadow 0.15s ease;
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+.fg-btn--primary {
+  background: var(--fg-primary);
+  color: var(--fg-primary-ink);
+  &:hover:not(:disabled) { box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25); }
+}
+.fg-btn--ghost {
+  background: transparent;
+  color: var(--fg-text-muted);
+  border-color: var(--fg-border);
+  &:hover:not(:disabled) { border-color: var(--fg-border-2); color: var(--fg-text); }
+}
+
+/* ── Utility: Progress Bar ────────────────────────────── */
+.fg-bar {
+  height: 6px;
+  background: var(--fg-card-2);
+  border-radius: 999px;
+  overflow: hidden;
+  > div {
+    height: 100%;
+    background: var(--fg-primary);
+    border-radius: 999px;
+    transition: width 0.4s ease;
+  }
+}
+.fg-bar--danger  > div { background: var(--fg-danger);  }
+.fg-bar--warning > div { background: var(--fg-warning); }
+.fg-bar--success > div { background: var(--fg-success); }

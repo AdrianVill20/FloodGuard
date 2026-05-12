@@ -1,142 +1,149 @@
 <!-- ============================================================
      FloodGuard ASEAN — Citizen Flood Reporting Page
+     Command Center Slate Redesign
      ============================================================ -->
 
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>
-      🌊 FloodGuard ASEAN
-    </ion-title>
-    <ion-buttons slot="end">
-      <ion-button routerLink="/dashboard">
-        <ion-icon name="grid-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content class="ion-padding">
-
- <!-- HERO SECTION -->
-<div class="hero-section">
-  <div class="hero-logo">🌊</div>
-  <h1 class="hero-title">FloodGuard ASEAN</h1>
-  <p class="hero-subtitle">
-    Cebu City Flood Monitoring & Early Warning System
-  </p>
-  <div class="hero-badges">
-    <span class="badge">📡 Satellite Data</span>
-    <span class="badge">🤖 NLP Powered</span>
-    <span class="badge">🗺️ 80 Barangays</span>
+<!-- ── Minimal Header ────────────────────────────────────── -->
+<header class="fg-report-nav">
+  <div class="fg-header__brand">
+    <div class="fg-header__mark">FG</div>
+    <span class="fg-header__name">
+      FloodGuard <span class="fg-header__asean">ASEAN</span>
+    </span>
   </div>
-</div>
+  <button class="fg-btn fg-btn--ghost" routerLink="/dashboard">
+    <ion-icon name="grid-outline"></ion-icon>
+    Dashboard
+  </button>
+</header>
 
-  <!-- MESSAGE INPUT CARD -->
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Your Message</ion-card-title>
-      <ion-card-subtitle>
-        Example: "Baha na sa Lahug tabang!"
-      </ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
+<ion-content>
 
-      <ion-textarea
+  <!-- ── Hero ──────────────────────────────────────────────── -->
+  <header class="fg-report-hero">
+    <p class="fg-eyebrow">Citizen Reporting · v4.2</p>
+    <h1>FloodGuard <span class="accent">ASEAN</span></h1>
+    <p class="fg-report-hero__sub">
+      Real-time flood reporting for Cebu City —
+      English &amp; Cebuano supported.
+    </p>
+    <div class="fg-badges">
+      <span class="fg-chip fg-chip--primary">Satellite Data</span>
+      <span class="fg-chip fg-chip--primary">NLP Powered</span>
+      <span class="fg-chip fg-chip--primary">80 Barangays</span>
+    </div>
+  </header>
+
+  <!-- ── Form Card ─────────────────────────────────────────── -->
+  <div class="fg-form-card fg-card">
+
+    <div class="fg-form-card__label">
+      <p class="fg-eyebrow">Field Observation · English / Cebuano</p>
+      <p class="fg-form-example">
+        e.g. "Baha na sa Lahug tabang!" / "Flood water rising in my area"
+      </p>
+    </div>
+
+    <!-- Textarea -->
+    <div class="fg-textarea-wrap" [class.is-focused]="false">
+      <textarea
+        class="fg-textarea"
         [(ngModel)]="message"
-        placeholder="Type your flood report here..."
+        placeholder="Type your flood report here…"
         rows="4"
-        fill="outline"
-        counter="true"
         maxlength="200">
-      </ion-textarea>
+      </textarea>
+    </div>
 
-      <!-- Error message -->
-      <ion-text color="danger" *ngIf="errorMsg">
-        <p>{{ errorMsg }}</p>
-      </ion-text>
+    <!-- Char count + hint row -->
+    <div class="fg-form-meta">
+      <span class="fg-eyebrow">Min 8 characters</span>
+      <span class="fg-mono fg-form-count">{{ message?.length || 0 }}/200</span>
+    </div>
 
-      <!-- Buttons -->
-      <div class="button-row">
-        <ion-button
-          expand="block"
-          color="primary"
-          (click)="submitReport()"
-          [disabled]="isLoading">
-          <ion-icon name="send-outline" slot="start"></ion-icon>
-          {{ isLoading ? 'Analyzing...' : 'Submit Report' }}
-        </ion-button>
+    <!-- Error message -->
+    <p class="fg-error" *ngIf="errorMsg">{{ errorMsg }}</p>
 
-        <ion-button
-          expand="block"
-          color="medium"
-          fill="outline"
-          (click)="clearForm()"
-          *ngIf="result">
-          <ion-icon name="refresh-outline" slot="start"></ion-icon>
-          Clear
-        </ion-button>
-      </div>
+    <!-- Actions -->
+    <div class="fg-actions">
+      <button type="button"
+              class="fg-btn fg-btn--primary fg-btn--full"
+              (click)="submitReport()"
+              [disabled]="isLoading">
+        <ion-spinner *ngIf="isLoading" name="dots" style="width:16px;height:16px"></ion-spinner>
+        <span *ngIf="!isLoading">Transmit Report</span>
+        <span *ngIf="isLoading">Analyzing…</span>
+      </button>
 
-    </ion-card-content>
-  </ion-card>
+      <button type="button"
+              class="fg-btn fg-btn--ghost"
+              *ngIf="result"
+              (click)="clearForm()">
+        Clear
+      </button>
+    </div>
 
-  <!-- LOADING SPINNER -->
-  <div class="loading-box" *ngIf="isLoading">
+  </div>
+  <!-- /form card -->
+
+  <!-- ── Loading ───────────────────────────────────────────── -->
+  <div class="fg-loading-box" *ngIf="isLoading">
     <ion-spinner name="crescent" color="primary"></ion-spinner>
-    <p>Analyzing your message...</p>
+    <p>Analyzing your report…</p>
   </div>
 
-  <!-- RESULT CARD -->
-  <ion-card *ngIf="result" class="result-card">
-    <ion-card-header [color]="getUrgencyColor()">
-      <ion-card-title style="color: white;">
-        {{ result.urgency === 'HIGH'   ? '🚨 HIGH URGENCY'   :
+  <!-- ── Result Card ───────────────────────────────────────── -->
+  <div class="fg-result fg-card"
+       *ngIf="result"
+       [class.is-danger]="result.urgency === 'HIGH'"
+       [class.is-warning]="result.urgency === 'MEDIUM'"
+       [class.is-info]="result.urgency === 'LOW'">
+
+    <!-- Result header -->
+    <div class="fg-result__head">
+      <span class="fg-chip"
+            [class.fg-chip--danger]="result.urgency === 'HIGH'"
+            [class.fg-chip--warning]="result.urgency === 'MEDIUM'"
+            [class.fg-chip--primary]="result.urgency === 'LOW'">
+        {{ result.urgency === 'HIGH'   ? '🚨 HIGH URGENCY' :
            result.urgency === 'MEDIUM' ? '⚠️ MODERATE URGENCY' :
                                          'ℹ️ LOW URGENCY' }}
-      </ion-card-title>
-    </ion-card-header>
+      </span>
+      <span class="fg-mono fg-result__conf">
+        NLP Confidence {{ result.confidence || '—' }}
+      </span>
+    </div>
 
-    <ion-card-content>
+    <!-- Detection grid -->
+    <div class="fg-result__grid">
 
-      <!-- Detection Results -->
-      <ion-list lines="none">
-        <ion-item>
-          <ion-icon name="location-outline" slot="start" color="primary">
-          </ion-icon>
-          <ion-label>
-            <h3>Location Detected</h3>
-            <p>{{ result.location || 'Not detected' }}</p>
-          </ion-label>
-        </ion-item>
-
-        <ion-item>
-          <ion-icon name="flag-outline" slot="start" color="warning">
-          </ion-icon>
-          <ion-label>
-            <h3>Urgency Level</h3>
-            <p>{{ result.urgency }}</p>
-          </ion-label>
-        </ion-item>
-
-        <ion-item>
-          <ion-icon name="language-outline" slot="start" color="success">
-          </ion-icon>
-          <ion-label>
-            <h3>Language Detected</h3>
-            <p>{{ result.language }}</p>
-          </ion-label>
-        </ion-item>
-      </ion-list>
-
-      <ion-item-divider></ion-item-divider>
-
-      <!-- Generated Alert -->
-      <div class="alert-box">
-        <h3>📢 Generated Alert</h3>
-        <p>{{ result.alert }}</p>
+      <div class="fg-result__field">
+        <p class="fg-eyebrow">Location Detected</p>
+        <p class="fg-result__value">{{ result.location || 'Not detected' }}</p>
       </div>
 
-    </ion-card-content>
-  </ion-card>
+      <div class="fg-result__field">
+        <p class="fg-eyebrow">Urgency Level</p>
+        <p class="fg-result__value">{{ result.urgency }}</p>
+      </div>
+
+      <div class="fg-result__field">
+        <p class="fg-eyebrow">Language Detected</p>
+        <p class="fg-result__value">{{ result.language }}</p>
+      </div>
+
+    </div>
+
+    <!-- Generated Alert -->
+    <div class="fg-result__alert" *ngIf="result.alert">
+      <p class="fg-eyebrow">Generated Alert</p>
+      <p class="fg-result__alert-text">{{ result.alert }}</p>
+    </div>
+
+  </div>
+  <!-- /result card -->
+
+  <!-- Spacer for mobile scroll comfort -->
+  <div style="height: 48px"></div>
 
 </ion-content>
