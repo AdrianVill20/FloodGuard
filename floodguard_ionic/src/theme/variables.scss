@@ -1,2 +1,58 @@
-// For information on how to create your own theme, please refer to:
-// https://ionicframework.com/docs/theming/
+/* ============================================================
+   FloodGuard ASEAN — Professional Blue & White Theme
+   ============================================================ */
+
+:root {
+  /* Primary — Government Blue */
+  --ion-color-primary        : #1a56a0;
+  --ion-color-primary-rgb    : 26, 86, 160;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-shade  : #174a8c;
+  --ion-color-primary-tint   : #3168aa;
+
+  /* Secondary — Light Blue */
+  --ion-color-secondary        : #2980b9;
+  --ion-color-secondary-rgb    : 41, 128, 185;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-shade  : #2472a4;
+  --ion-color-secondary-tint   : #3e8dc0;
+
+  /* Danger — Alert Red */
+  --ion-color-danger        : #c0392b;
+  --ion-color-danger-rgb    : 192, 57, 43;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-shade  : #a93226;
+  --ion-color-danger-tint   : #c64d40;
+
+  /* Warning */
+  --ion-color-warning        : #d35400;
+  --ion-color-warning-rgb    : 211, 84, 0;
+  --ion-color-warning-contrast: #ffffff;
+  --ion-color-warning-shade  : #ba4a00;
+  --ion-color-warning-tint   : #d7651a;
+
+  /* Success */
+  --ion-color-success        : #1e8449;
+  --ion-color-success-rgb    : 30, 132, 73;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-shade  : #1a7340;
+  --ion-color-success-tint   : #35905b;
+
+  /* Background */
+  --ion-background-color     : #f0f4f8;
+  --ion-background-color-rgb : 240, 244, 248;
+
+  /* Text */
+  --ion-text-color           : #1a252f;
+  --ion-text-color-rgb       : 26, 37, 47;
+
+  /* Toolbar */
+  --ion-toolbar-background   : #1a56a0;
+  --ion-toolbar-color        : #ffffff;
+
+  /* Cards */
+  --ion-card-background      : #ffffff;
+
+  /* Font */
+  --ion-font-family          : 'Segoe UI', system-ui, -apple-system, sans-serif;
+}

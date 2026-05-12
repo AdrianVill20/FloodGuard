@@ -46,4 +46,15 @@ export class ApiService {
     const encoded = encodeURIComponent(barangayName);
     return this.http.get(`${this.baseUrl}/barangays/pixels/${encoded}/`);
   }
+
+  // Get time series for one barangay
+  getBarangayTimeseries(barangayName: string): Observable<any> {
+    const encoded = encodeURIComponent(barangayName);
+    return this.http.get(`${this.baseUrl}/barangays/timeseries/${encoded}/`);
+  }
+
+  // Get all barangays snapshot for a specific year (map slider)
+  getYearSnapshot(year: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/barangays/timeseries/all/${year}/`);
+  }
 }

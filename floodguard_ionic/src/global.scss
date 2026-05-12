@@ -35,3 +35,46 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+
+/* ============================================================
+   FloodGuard ASEAN — Global Styles
+   ============================================================ */
+
+ion-header ion-toolbar {
+  --background: #1a56a0;
+  --color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+ion-title {
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.3px;
+}
+
+ion-card {
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+}
+
+ion-button {
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  border-radius: 8px;
+}
+
+ion-badge {
+  font-weight: 700;
+  border-radius: 6px;
+}
+
+ion-item {
+  --border-radius: 8px;
+  --padding-start: 12px;
+}
+
+/* Page background */
+ion-content {
+  --background: #f0f4f8;
+}

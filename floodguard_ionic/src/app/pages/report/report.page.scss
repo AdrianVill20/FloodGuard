@@ -1,9 +1,43 @@
 .hero-section {
   text-align: center;
-  padding: 20px 0 10px;
+  padding: 28px 20px 16px;
+  background: linear-gradient(135deg, #1a56a0 0%, #2980b9 100%);
+  color: white;
+  margin: -16px -16px 16px;
+}
 
-  h2 { font-weight: 700; font-size: 1.5rem; }
-  p  { color: #666; font-size: 0.9rem; }
+.hero-logo {
+  font-size: 3rem;
+  margin-bottom: 8px;
+}
+
+.hero-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 0 0 4px;
+  letter-spacing: 0.5px;
+}
+
+.hero-subtitle {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  margin: 0 0 12px;
+}
+
+.hero-badges {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.badge {
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .button-row {
@@ -21,14 +55,31 @@
 
 .result-card {
   margin-top: 16px;
+  border-left: 4px solid var(--ion-color-primary);
 }
 
 .alert-box {
-  background: #f4f4f4;
-  border-radius: 8px;
+  background: #f0f4f8;
+  border-radius: 10px;
   padding: 16px;
   margin-top: 12px;
+  border-left: 4px solid #1a56a0;
 
-  h3 { font-weight: 700; margin-bottom: 8px; }
-  p  { line-height: 1.6; }
+  h3 {
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #1a56a0;
+  }
+
+  p {
+    line-height: 1.7;
+    color: #2c3e50;
+  }
+}
+
+ion-card-header {
+  ion-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+  }
 }

@@ -33,55 +33,78 @@
     </ion-card>
   </div>
 
-  <!-- TAB SWITCHER -->
+  <!-- TABS -->
   <div class="tab-row">
     <ion-button
-      [fill]="selectedTab === 'map' ? 'solid' : 'outline'"
+      [fill]="selectedTab==='map' ? 'solid' : 'outline'"
       color="primary" size="small"
       (click)="switchTab('map')">
       🗺️ Map
     </ion-button>
     <ion-button
-      [fill]="selectedTab === 'list' ? 'solid' : 'outline'"
+      [fill]="selectedTab==='list' ? 'solid' : 'outline'"
       color="primary" size="small"
       (click)="switchTab('list')">
       📋 Barangays
     </ion-button>
     <ion-button
-      [fill]="selectedTab === 'reports' ? 'solid' : 'outline'"
+      [fill]="selectedTab==='reports' ? 'solid' : 'outline'"
       color="primary" size="small"
       (click)="switchTab('reports')">
       📨 Reports
     </ion-button>
   </div>
 
-  <!-- MAP TAB -->
-  <div *ngIf="selectedTab === 'map'">
+  <!-- MAP TAB — always in DOM, just hidden -->
+  <div [hidden]="selectedTab !== 'map'">
 
-    <!-- Selected barangay info + layer toggle -->
+    <!-- Year Slider -->
+    <div class="slider-section">
+      <div class="slider-header">
+        <span>📅 Year:</span>
+        <strong>
+          {{ sliderYear }}
+          <span *ngIf="partialYears.includes(sliderYear)"
+                class="partial-label">
+            (Partial Data)
+          </span>
+        </strong>
+        <ion-spinner *ngIf="isSliderLoading"
+          name="dots" color="primary" class="slider-spinner">
+        </ion-spinner>
+      </div>
+      <ion-range
+        [min]="2010" [max]="2026" [step]="1"
+        [snaps]="true" [ticks]="true"
+        [(ngModel)]="sliderYear"
+        (ionChange)="onSliderChange($event)"
+        color="primary">
+        <div slot="start" class="range-label">2020</div>
+        <div slot="end"   class="range-label">2026</div>
+      </ion-range>
+      <div class="year-ticks">
+        <span *ngFor="let y of years">{{ y }}</span>
+      </div>
+    </div>
+
+    <!-- Map controls -->
     <div class="map-controls" *ngIf="selectedBarangay">
       <div class="selected-info">
-        📍 <strong>{{ selectedBarangay }}</strong> — click dots for details
+        📍 <strong>{{ selectedBarangay }}</strong>
       </div>
       <div class="layer-toggle">
-        <ion-button
-          size="small"
-          [fill]="activeLayer === 'flood' ? 'solid' : 'outline'"
-          color="danger"
-          (click)="switchLayer('flood')">
-          🌊 Flood Risk
+        <ion-button size="small"
+          [fill]="activeLayer==='flood' ? 'solid' : 'outline'"
+          color="danger" (click)="switchLayer('flood')">
+          🌊 Flood
         </ion-button>
-        <ion-button
-          size="small"
-          [fill]="activeLayer === 'ndvi' ? 'solid' : 'outline'"
-          color="success"
-          (click)="switchLayer('ndvi')">
-          🌿 NDVI Risk
+        <ion-button size="small"
+          [fill]="activeLayer==='ndvi' ? 'solid' : 'outline'"
+          color="success" (click)="switchLayer('ndvi')">
+          🌿 NDVI
         </ion-button>
-        <ion-button
-          size="small"
-          fill="outline"
-          color="medium"
+        <ion-button size="small"
+          fill="outline" color="medium"
           (click)="resetMap()">
           ↩️ Reset
         </ion-button>
@@ -89,32 +112,103 @@
     </div>
 
     <div *ngIf="!selectedBarangay" class="map-hint">
-      👆 Click any barangay to see detailed flood risk zones inside it
+      👆 Click any barangay to see detailed zones and time series chart
     </div>
 
     <div id="flood-map"></div>
 
     <!-- Legend -->
     <div class="map-legend">
-      <span class="legend-item"><span class="dot high"></span> HIGH</span>
-      <span class="legend-item"><span class="dot moderate"></span> MODERATE</span>
-      <span class="legend-item"><span class="dot low"></span> LOW</span>
-      <span class="legend-sep">|</span>
-      <span class="legend-item"><span class="dot h1"></span> Very High</span>
-      <span class="legend-item"><span class="dot h2"></span> High</span>
-      <span class="legend-item"><span class="dot h3"></span> Medium</span>
-      <span class="legend-item"><span class="dot h4"></span> Low</span>
+      <span class="legend-item">
+        <span class="dot high"></span> HIGH
+      </span>
+      <span class="legend-item">
+        <span class="dot moderate"></span> MODERATE
+      </span>
+      <span class="legend-item">
+        <span class="dot low"></span> LOW
+      </span>
     </div>
+
+    <!-- Time Series Chart -->
+    <div class="chart-section" *ngIf="showChart && chartData">
+      <div class="chart-header">
+        <h3>📈 {{ chartData.barangay }} — Time Series (2020–2026)</h3>
+        <p class="chart-note">* 2026 is partial data (Jan–Apr only)</p>
+      </div>
+      <div class="chart-legend">
+        <span class="legend-item">
+          <span class="line-dot red"></span> Flood Risk Index
+        </span>
+        <span class="legend-item">
+          <span class="line-dot green"></span> NDVI
+        </span>
+      </div>
+      <canvas id="timeseries-chart"></canvas>
+      <div class="data-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Flood Risk</th>
+              <th>NDVI</th>
+              <th>Risk Level</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let d of chartData.flood_risk; let i = index">
+              <td>
+                {{ d.year }}
+                <span *ngIf="d.partial" class="partial-star">*</span>
+              </td>
+              <td>{{ d.value?.toFixed(4) || 'N/A' }}</td>
+              <td>{{ chartData.ndvi[i]?.value?.toFixed(4) || 'N/A' }}</td>
+              <td>
+                <span class="risk-badge"
+                  [class.high]="d.value >= 0.70"
+                  [class.moderate]="d.value >= 0.50 && d.value < 0.70"
+                  [class.low]="d.value < 0.50">
+                  {{ d.value >= 0.70 ? 'HIGH' :
+                     d.value >= 0.50 ? 'MODERATE' : 'LOW' }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 
-  <!-- BARANGAY LIST TAB -->
-  <div *ngIf="selectedTab === 'list'" class="ion-padding">
+  <!-- BARANGAY LIST TAB — always in DOM, just hidden -->
+  <div [hidden]="selectedTab !== 'list'" class="ion-padding">
+
+    <ion-searchbar
+      placeholder="Search barangay or risk level..."
+      (ionInput)="searchBarangays($event)"
+      [debounce]="300"
+      color="light">
+    </ion-searchbar>
+
+    <div class="search-info" *ngIf="searchQuery">
+      Found {{ filteredBarangays.length }} of {{ barangays.length }} barangays
+    </div>
+
     <div class="loading-box" *ngIf="isLoading">
       <ion-spinner name="crescent" color="primary"></ion-spinner>
       <p>Loading barangay data...</p>
     </div>
-    <ion-list *ngIf="!isLoading">
-      <ion-item *ngFor="let b of barangays; let i = index">
+
+    <div class="no-results"
+      *ngIf="!isLoading && filteredBarangays.length === 0">
+      <p>😕 No barangays found for "{{ searchQuery }}"</p>
+    </div>
+
+    <ion-list *ngIf="!isLoading && filteredBarangays.length > 0">
+      <ion-item
+        *ngFor="let b of filteredBarangays; let i = index"
+        (click)="selectBarangayFromList(b)"
+        button detail="true">
         <ion-badge slot="start" [color]="getRiskBadgeColor(b.risk_level)">
           {{ i + 1 }}
         </ion-badge>
@@ -136,8 +230,8 @@
     </ion-list>
   </div>
 
-  <!-- REPORTS TAB -->
-  <div *ngIf="selectedTab === 'reports'" class="ion-padding">
+  <!-- REPORTS TAB — always in DOM, just hidden -->
+  <div [hidden]="selectedTab !== 'reports'" class="ion-padding">
     <div class="loading-box" *ngIf="reportLoading">
       <ion-spinner name="crescent" color="primary"></ion-spinner>
       <p>Loading reports...</p>
@@ -149,7 +243,10 @@
         </ion-badge>
         <ion-label>
           <h3>{{ report.message }}</h3>
-          <p>📍 {{ report.location || 'Not detected' }} | 🌐 {{ report.language }}</p>
+          <p>
+            📍 {{ report.location || 'Not detected' }} |
+            🌐 {{ report.language }}
+          </p>
           <p class="alert-text">{{ report.alert }}</p>
         </ion-label>
       </ion-item>

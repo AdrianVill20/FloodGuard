@@ -191,3 +191,117 @@ def get_barangay_pixels(request, barangay_name):
             {"error": str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+# ----------------------------------------------------------
+# ENDPOINT 7: Get time series data for a barangay
+# GET /api/barangays/timeseries/<barangay_name>/
+# ----------------------------------------------------------
+@api_view(['GET'])
+def get_barangay_timeseries(request, barangay_name):
+    try:
+        path = os.path.join(
+            settings.BASE_DIR, 'static', 'data',
+            'cebu_barangay_timeseries.json'
+        )
+        with open(path, 'r') as f:
+            all_data = json.load(f)
+
+        # Case-insensitive match
+        matched_key = None
+        for key in all_data.keys():
+            if key.lower() == barangay_name.lower():
+                matched_key = key
+                break
+
+        if not matched_key:
+            return Response(
+                {"error": f"Barangay '{barangay_name}' not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        data = all_data[matched_key]
+
+        # Format for chart
+        years      = sorted(data.keys())
+        ndvi_series = []
+        risk_series = []
+
+        for year in years:
+            ndvi_series.append({
+                "year"   : int(year),
+                "value"  : data[year]['ndvi'],
+                "partial": data[year]['partial']
+            })
+            risk_series.append({
+                "year"   : int(year),
+                "value"  : data[year]['flood_risk'],
+                "partial": data[year]['partial']
+            })
+
+        return Response({
+            "status"    : "success",
+            "barangay"  : matched_key,
+            "ndvi"      : ndvi_series,
+            "flood_risk": risk_series,
+            "years"     : [int(y) for y in years],
+            "note"      : "2026 data is partial (Jan-Apr only)"
+        })
+
+    except Exception as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+# ----------------------------------------------------------
+# ENDPOINT 8: Get all barangays time series (for map slider)
+# GET /api/barangays/timeseries/all/<year>/
+# ----------------------------------------------------------
+@api_view(['GET'])
+def get_year_snapshot(request, year):
+    try:
+        path = os.path.join(
+            settings.BASE_DIR, 'static', 'data',
+            'cebu_barangay_timeseries.json'
+        )
+        with open(path, 'r') as f:
+            all_data = json.load(f)
+
+        year_str  = str(year)
+        snapshot  = []
+
+        for barangay, years in all_data.items():
+            if year_str in years:
+                entry = years[year_str]
+                flood = entry.get('flood_risk', None)
+
+                if flood is not None:
+                    if flood >= 0.70:
+                        risk_level = "HIGH"
+                    elif flood >= 0.50:
+                        risk_level = "MODERATE"
+                    else:
+                        risk_level = "LOW"
+                else:
+                    risk_level = "UNKNOWN"
+
+                snapshot.append({
+                    "barangay"  : barangay,
+                    "year"      : year,
+                    "ndvi"      : entry.get('ndvi'),
+                    "flood_risk": flood,
+                    "risk_level": risk_level,
+                    "partial"   : entry.get('partial', False)
+                })
+
+        return Response({
+            "status"  : "success",
+            "year"    : year,
+            "total"   : len(snapshot),
+            "data"    : snapshot
+        })
+
+    except Exception as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
