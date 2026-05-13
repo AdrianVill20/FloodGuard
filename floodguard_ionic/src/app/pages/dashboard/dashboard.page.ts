@@ -9,6 +9,7 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api';
 import * as L from 'leaflet';
+import 'leaflet.heat';
 
 @Component({
   selector: 'app-dashboard',
@@ -34,11 +35,14 @@ export class DashboardPage implements OnInit, AfterViewInit {
   // Table slider state
   tableYear           : number  = 2020;
   isTableSliderLoading: boolean = false;
-  // Lookup from year snapshot for table NDVI/risk
-  private tableYearLookup: any = {};
+  private tableYearLookup: any  = {};
 
   // Task 2: Heatmap toggle
   heatmapVisible   : boolean = true;
+
+  // Table sorting
+  sortColumn       : string  = 'barangay';
+  sortDirection    : string  = 'asc'; // 'asc' or 'desc'
 
   // Chart data
   chartData        : any     = null;
@@ -54,6 +58,9 @@ export class DashboardPage implements OnInit, AfterViewInit {
   private heatLayer    : any;
   private currentPixels: any[] = [];
   private yearLayers   : any   = {};
+
+  // Pending heatmap subscription — cancel if slider moves again quickly
+  private heatmapSub   : any   = null;
 
   // Year slider config
   years        = [2010, 2011, 2012, 2013, 2014, 2015, 2016,
@@ -91,7 +98,7 @@ export class DashboardPage implements OnInit, AfterViewInit {
     setTimeout(() => event.target.complete(), 1500);
   }
 
-  // --- Load barangay list (base data, always year-agnostic from /barangays/) ---
+  // --- Load barangay list ---
   loadBarangays() {
     this.isLoading = true;
     this.api.getBarangays().subscribe({
@@ -101,7 +108,6 @@ export class DashboardPage implements OnInit, AfterViewInit {
         );
         this.summary   = response.summary;
         this.isLoading = false;
-        // After base data loads, overlay the table year snapshot
         this.loadTableYearSnapshot(this.tableYear);
       },
       error: () => { this.isLoading = false; }
@@ -113,12 +119,10 @@ export class DashboardPage implements OnInit, AfterViewInit {
     this.isTableSliderLoading = true;
     this.api.getYearSnapshot(year).subscribe({
       next: (response: any) => {
-        // Build a lookup: barangay name → { ndvi, flood_risk, risk_level }
         this.tableYearLookup = {};
         response.data.forEach((entry: any) => {
           this.tableYearLookup[entry.barangay] = entry;
         });
-        // Merge year-specific ndvi/risk into the barangay rows
         this.barangays = this.barangays.map((b: any) => {
           const snapshot = this.tableYearLookup[b.barangay];
           return {
@@ -177,11 +181,21 @@ export class DashboardPage implements OnInit, AfterViewInit {
   // --- Task 2: Toggle heatmap visibility ---
   toggleHeatmap() {
     this.heatmapVisible = !this.heatmapVisible;
-    if (!this.heatLayer) return;
-    if (this.heatmapVisible) {
-      this.heatLayer.addTo(this.map);
-    } else {
-      this.map.removeLayer(this.heatLayer);
+    if (!this.map) return;
+    
+    // If heatmap not yet rendered but we're turning it on, render it
+    if (this.heatmapVisible && !this.heatLayer && this.currentPixels.length > 0) {
+      this.renderHeatmap(this.activeLayer);
+      return;
+    }
+    
+    // If heatmap exists, add or remove it
+    if (this.heatLayer) {
+      if (this.heatmapVisible) {
+        this.heatLayer.addTo(this.map);
+      } else {
+        this.map.removeLayer(this.heatLayer);
+      }
     }
   }
 
@@ -217,6 +231,7 @@ export class DashboardPage implements OnInit, AfterViewInit {
             }).addTo(this.map);
             setTimeout(() => {
               this.map.removeLayer(highlight);
+              // Pass the current sliderYear so the heatmap reflects the selected year
               this.loadBarangayHeatmap(barangay.barangay);
             }, 2000);
           }
@@ -240,14 +255,64 @@ export class DashboardPage implements OnInit, AfterViewInit {
   // --- Init map ---
   initMap() {
     if (this.map) return;
+
+    const standardMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    });
+
+    const topoMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles © Esri'
+    });
+
     this.map = L.map('flood-map', {
       center: [10.3157, 123.8854],
-      zoom  : 12
+      zoom  : 12,
+      layers: [standardMap]
     });
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(this.map);
+
+    const baseMaps = {
+      "Standard View" : standardMap,
+      "Elevation View": topoMap
+    };
+    L.control.layers(baseMaps, undefined, { position: 'topright' }).addTo(this.map);
+
+    this.map.on('click', (e: any) => this.handleMapClick(e));
+
     this.loadYearSnapshot(this.selectedYear);
+  }
+
+  // --- Heatmap Click Handler ---
+  handleMapClick(e: any) {
+    if (!this.heatmapVisible || !this.currentPixels || this.currentPixels.length === 0) return;
+
+    let closestPixel = null;
+    let minDistance  = Infinity;
+
+    for (const p of this.currentPixels) {
+      const pixelLatLng = L.latLng(p.lat, p.lon);
+      const dist        = this.map.distance(e.latlng, pixelLatLng);
+      if (dist < minDistance) {
+        minDistance  = dist;
+        closestPixel = p;
+      }
+    }
+
+    if (closestPixel && minDistance < 60) {
+      const clampedNdvi = closestPixel.ndvi !== null ? Math.max(0, closestPixel.ndvi) : 0;
+      const value       = this.activeLayer === 'flood'
+        ? closestPixel.flood
+        : (closestPixel.ndvi !== null ? 1 - clampedNdvi : 0);
+
+      L.popup()
+        .setLatLng([closestPixel.lat, closestPixel.lon])
+        .setContent(`
+          <strong>${this.selectedBarangay}</strong><br/>
+          Year: <b>${this.sliderYear}</b><br/>
+          ${this.activeLayer === 'flood' ? 'Flood Risk' : 'NDVI Risk'}: ${value.toFixed(4)}<br/>
+          NDVI: ${closestPixel.ndvi !== undefined && closestPixel.ndvi !== null ? closestPixel.ndvi.toFixed(4) : 'N/A'}
+        `)
+        .openOn(this.map);
+    }
   }
 
   // --- Load year snapshot for MAP slider ---
@@ -309,6 +374,8 @@ export class DashboardPage implements OnInit, AfterViewInit {
   }
 
   // --- Map year slider change ---
+  // Updates sliderYear, reloads the choropleth snapshot AND re-fetches heatmap
+  // pixels for the currently selected barangay so dots update reactively.
   onSliderChange(event: any) {
     const year      = parseInt(event.detail.value);
     this.sliderYear = year;
@@ -397,16 +464,32 @@ export class DashboardPage implements OnInit, AfterViewInit {
     }, 100);
   }
 
-  // --- Load heatmap pixels ---
+  // --- Load heatmap pixels for a barangay at the current sliderYear ---
   loadBarangayHeatmap(barangayName: string) {
+    // Cancel any in-flight request
+    if (this.heatmapSub) {
+      this.heatmapSub.unsubscribe();
+      this.heatmapSub = null;
+    }
+
+    // Clear existing heat layer immediately so the map doesn't show stale data
     if (this.heatLayer) {
       this.map.removeLayer(this.heatLayer);
       this.heatLayer = null;
     }
-    this.api.getBarangayPixels(barangayName).subscribe({
+    this.currentPixels    = [];
+    this.selectedBarangay = barangayName;
+
+    // Request pixels for the currently active slider year
+    this.heatmapSub = this.api.getBarangayPixels(barangayName, this.sliderYear).subscribe({
       next: (response: any) => {
         this.currentPixels = response.pixels;
         this.renderHeatmap(this.activeLayer);
+        this.heatmapSub = null;
+      },
+      error: (err: any) => {
+        console.error('Heatmap load error:', err);
+        this.heatmapSub = null;
       }
     });
   }
@@ -418,27 +501,32 @@ export class DashboardPage implements OnInit, AfterViewInit {
       this.heatLayer = null;
     }
     if (!this.currentPixels.length) return;
-    const group = L.layerGroup();
-    this.currentPixels.forEach((p: any) => {
-      const value = layerType === 'flood'
+
+    const heatData = this.currentPixels.map((p: any) => {
+      const clampedNdvi = p.ndvi !== null ? Math.max(0, p.ndvi) : 0;
+      const value       = layerType === 'flood'
         ? p.flood
-        : (p.ndvi !== null ? 1 - p.ndvi : 0);
-      L.circleMarker([p.lat, p.lon], {
-        radius     : 6,
-        fillColor  : this.getHeatColor(value),
-        fillOpacity: 0.75,
-        color      : 'transparent',
-        weight     : 0
-      }).bindPopup(`
-        <strong>${this.selectedBarangay}</strong><br/>
-        ${layerType === 'flood' ? 'Flood Risk' : 'NDVI Risk'}: ${value.toFixed(4)}<br/>
-        Elevation: ${p.elev?.toFixed(0)}m<br/>
-        NDVI: ${p.ndvi?.toFixed(4)}
-      `).addTo(group);
+        : (p.ndvi !== null ? 1 - clampedNdvi : 0);
+      return [p.lat, p.lon, value];
     });
-    this.heatLayer = group;
+
+    this.heatLayer = (L as any).heatLayer(heatData, {
+      radius    : 20,
+      blur      : 15,
+      minOpacity: 0.6,
+      maxZoom   : 16,
+      gradient  : {
+        0.00: '#27ae60',
+        0.30: '#2ecc71',
+        0.45: '#f1c40f',
+        0.60: '#e67e22',
+        0.75: '#e74c3c',
+        1.00: '#e74c3c'
+      }
+    });
+
     if (this.heatmapVisible) {
-      group.addTo(this.map);
+      this.heatLayer.addTo(this.map);
     }
   }
 
@@ -448,12 +536,55 @@ export class DashboardPage implements OnInit, AfterViewInit {
     if (this.selectedBarangay) this.renderHeatmap(layer);
   }
 
+  // --- Table sorting ---
+  sortTable(column: string) {
+    // Toggle direction if clicking same column
+    if (this.sortColumn === column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    }
+    
+    // Sort the filtered barangays
+    this.filteredBarangays.sort((a: any, b: any) => {
+      let valA = a[column];
+      let valB = b[column];
+
+      // Handle numeric strings and numbers
+      if (typeof valA === 'string' && !isNaN(parseFloat(valA))) {
+        valA = parseFloat(valA);
+        valB = parseFloat(valB);
+      }
+
+      // Handle null/undefined
+      if (valA == null) valA = '';
+      if (valB == null) valB = '';
+
+      // Case-insensitive string comparison
+      if (typeof valA === 'string') {
+        valA = valA.toLowerCase();
+        valB = valB.toLowerCase();
+      }
+
+      if (this.sortDirection === 'asc') {
+        return valA < valB ? -1 : valA > valB ? 1 : 0;
+      } else {
+        return valA > valB ? -1 : valA < valB ? 1 : 0;
+      }
+    });
+  }
+
+  // --- Get sort indicator ---
+  getSortIndicator(column: string): string {
+    if (this.sortColumn !== column) return '';
+    return this.sortDirection === 'asc' ? ' ↑' : ' ↓';
+  }
+
   // --- Reset map ---
   resetMap() {
     this.selectedBarangay = '';
     this.currentPixels    = [];
-    this.showChart        = false;
-    this.chartData        = null;
     if (this.heatLayer) {
       this.map.removeLayer(this.heatLayer);
       this.heatLayer = null;
@@ -461,7 +592,27 @@ export class DashboardPage implements OnInit, AfterViewInit {
     this.map.setView([10.3157, 123.8854], 12);
   }
 
-  // --- Color helpers ---
+  // --- Risk color helper ---
+  getRiskColor(riskLevel: string): string {
+    switch (riskLevel) {
+      case 'HIGH'    : return '#e74c3c';
+      case 'MODERATE': return '#e67e22';
+      case 'LOW'     : return '#27ae60';
+      default        : return '#95a5a6';
+    }
+  }
+
+  // --- Switch tab ---
+  switchTab(tab: string) {
+    this.selectedTab = tab;
+    if (tab === 'map') {
+      setTimeout(() => {
+        if (this.map) this.map.invalidateSize();
+      }, 300);
+    }
+  }
+
+  // --- Color helper for heatmap ---
   getHeatColor(value: number): string {
     if (value >= 0.75) return '#e74c3c';
     if (value >= 0.60) return '#e67e22';
@@ -470,30 +621,17 @@ export class DashboardPage implements OnInit, AfterViewInit {
     return '#27ae60';
   }
 
-  getRiskColor(risk: string): string {
-    if (risk === 'HIGH')     return '#e74c3c';
-    if (risk === 'MODERATE') return '#f39c12';
-    return '#27ae60';
-  }
-
+  // --- Urgency color helper ---
   getUrgencyColor(urgency: string): string {
     if (urgency === 'HIGH')   return 'danger';
     if (urgency === 'MEDIUM') return 'warning';
     return 'success';
   }
 
+  // --- Risk badge color helper ---
   getRiskBadgeColor(risk: string): string {
     if (risk === 'HIGH')     return 'danger';
     if (risk === 'MODERATE') return 'warning';
     return 'success';
-  }
-
-  switchTab(tab: string) {
-    this.selectedTab = tab;
-    if (tab === 'map') {
-      setTimeout(() => {
-        if (this.map) this.map.invalidateSize();
-      }, 300);
-    }
   }
 }

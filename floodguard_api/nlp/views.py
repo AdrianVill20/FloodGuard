@@ -151,11 +151,11 @@ def get_barangay_map(request):
         )
     
 # ----------------------------------------------------------
-# ENDPOINT 6: Get pixel data for sub-barangay heatmap
-# GET /api/barangays/pixels/<barangay_name>/
+# ENDPOINT 6: Get pixel data for sub-barangay heatmap (year-aware)
+# GET /api/barangays/pixels/<barangay_name>/<year>/
 # ----------------------------------------------------------
 @api_view(['GET'])
-def get_barangay_pixels(request, barangay_name):
+def get_barangay_pixels(request, barangay_name, year):
     try:
         pixels_path = os.path.join(
             settings.BASE_DIR, 'static', 'data',
@@ -179,9 +179,37 @@ def get_barangay_pixels(request, barangay_name):
 
         pixels = all_pixels[matched_key]
 
+        # Load timeseries data to apply year-specific flood risk values
+        try:
+            timeseries_path = os.path.join(
+                settings.BASE_DIR, 'static', 'data',
+                'cebu_barangay_timeseries.json'
+            )
+            with open(timeseries_path, 'r') as f:
+                timeseries_data = json.load(f)
+            
+            year_str = str(year)
+            if matched_key in timeseries_data and year_str in timeseries_data[matched_key]:
+                year_entry = timeseries_data[matched_key][year_str]
+                year_flood_risk = year_entry.get('flood_risk')
+                year_ndvi = year_entry.get('ndvi')
+                
+                # Apply year-specific values to pixels
+                if year_flood_risk is not None or year_ndvi is not None:
+                    pixels = [dict(p) for p in pixels]  # Deep copy to avoid modifying original
+                    for pixel in pixels:
+                        if year_flood_risk is not None:
+                            pixel['flood'] = year_flood_risk
+                        if year_ndvi is not None:
+                            pixel['ndvi'] = year_ndvi
+        except Exception as e:
+            # If timeseries loading fails, just use static pixel data
+            pass
+
         return Response({
             "status"  : "success",
             "barangay": matched_key,
+            "year"    : year,
             "total"   : len(pixels),
             "pixels"  : pixels
         })

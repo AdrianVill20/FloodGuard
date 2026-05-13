@@ -518,6 +518,17 @@ ion-content {
     background: var(--fg-card-2);
   }
 
+  th.fg-sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: var(--fg-border);
+      color: var(--fg-text);
+    }
+  }
+
   td {
     padding: 10px 14px;
     border-bottom: 1px solid var(--fg-border);

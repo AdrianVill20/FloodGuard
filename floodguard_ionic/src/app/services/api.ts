@@ -41,10 +41,11 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}/barangays/map/`);
   }
 
-  // Get pixel data for sub-barangay heatmap
-  getBarangayPixels(barangayName: string): Observable<any> {
+  // Get pixel data for sub-barangay heatmap for a specific year
+  // URL: /api/barangays/pixels/<barangay_name>/<year>/
+  getBarangayPixels(barangayName: string, year: number): Observable<any> {
     const encoded = encodeURIComponent(barangayName);
-    return this.http.get(`${this.baseUrl}/barangays/pixels/${encoded}/`);
+    return this.http.get(`${this.baseUrl}/barangays/pixels/${encoded}/${year}/`);
   }
 
   // Get time series for one barangay

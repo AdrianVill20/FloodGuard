@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "leaflet.heat": "^0.2.0"
+  },
+  "devDependencies": {
+    "@types/leaflet.heat": "^0.2.5"
+  }
+}

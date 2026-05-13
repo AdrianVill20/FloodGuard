@@ -270,11 +270,11 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Barangay</th>
-            <th>Risk</th>
-            <th>Flood Risk Index</th>
-            <th>Elevation</th>
-            <th>NDVI {{ tableYear }}</th>
+            <th (click)="sortTable('barangay')" class="fg-sortable">Barangay{{ getSortIndicator('barangay') }}</th>
+            <th (click)="sortTable('risk_level')" class="fg-sortable">Risk{{ getSortIndicator('risk_level') }}</th>
+            <th (click)="sortTable('flood_risk')" class="fg-sortable">Flood Risk Index{{ getSortIndicator('flood_risk') }}</th>
+            <th (click)="sortTable('elevation_m')" class="fg-sortable">Elevation{{ getSortIndicator('elevation_m') }}</th>
+            <th (click)="sortTable('ndvi')" class="fg-sortable">NDVI {{ tableYear }}{{ getSortIndicator('ndvi') }}</th>
             <th>Deforestation Status</th>
           </tr>
         </thead>
