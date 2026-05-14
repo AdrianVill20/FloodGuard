@@ -106,24 +106,50 @@
     <div class="fg-map-wrap">
       <div id="flood-map"></div>
       
-      <div class="fg-map-legend fg-glass" style="width: 280px;">
-        <p class="fg-eyebrow" style="margin-bottom: 8px">Legend: {{ activeLayer === 'flood' ? 'Flood Risk' : 'NDVI' }}</p>
+      <div class="fg-map-legend fg-glass" style="width: 300px;">
+        <p class="fg-eyebrow" style="margin-bottom: 12px; border-bottom: 2px solid #e0e0e0; padding-bottom: 8px;">
+          📊 {{ activeLayer === 'flood' ? 'Flood Risk Index' : 'NDVI (Vegetation Health)' }}
+        </p>
         
-        <div *ngIf="activeLayer === 'flood'">
-          <div style="height: 12px; border-radius: 6px; background: linear-gradient(to right, #add8e6, #4169e1, #0000cd, #8a2be2, #ff0000); margin-bottom: 6px;"></div>
-          <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: #555;">
-            <span>Low Risk</span>
-            <span>Moderate</span>
-            <span>Severe Danger</span>
+        <!-- Flood Risk Legend -->
+        <div *ngIf="activeLayer === 'flood'" style="font-size: 12px;">
+          <p style="margin: 0 0 8px 0; color: #666; font-size: 11px;">Flood Risk by Year ({{ sliderYear }})</p>
+          <div style="display: flex; gap: 4px; align-items: center; margin-bottom: 4px;">
+            <div style="width: 20px; height: 20px; background: #27ae60; border-radius: 3px;"></div>
+            <span><strong>Low</strong> (0.0-0.40)</span>
+          </div>
+          <div style="display: flex; gap: 4px; align-items: center; margin-bottom: 4px;">
+            <div style="width: 20px; height: 20px; background: #f1c40f; border-radius: 3px;"></div>
+            <span><strong>Moderate</strong> (0.40-0.60)</span>
+          </div>
+          <div style="display: flex; gap: 4px; align-items: center; margin-bottom: 4px;">
+            <div style="width: 20px; height: 20px; background: #e67e22; border-radius: 3px;"></div>
+            <span><strong>High</strong> (0.60-0.75)</span>
+          </div>
+          <div style="display: flex; gap: 4px; align-items: center;">
+            <div style="width: 20px; height: 20px; background: #e74c3c; border-radius: 3px;"></div>
+            <span><strong>Critical</strong> (0.75+)</span>
           </div>
         </div>
 
-        <div *ngIf="activeLayer === 'ndvi'">
-          <div style="height: 12px; border-radius: 6px; background: linear-gradient(to right, #a0522d, #d2b48c, #f1c40f, #2ecc71, #006400); margin-bottom: 6px;"></div>
-          <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: #555;">
-            <span>Barren / Deforested</span>
-            <span>Transition</span>
-            <span>Healthy Forest</span>
+        <!-- NDVI Legend -->
+        <div *ngIf="activeLayer === 'ndvi'" style="font-size: 12px;">
+          <p style="margin: 0 0 8px 0; color: #666; font-size: 11px;">Vegetation Health by Year ({{ sliderYear }})<br/><span style="font-size: 10px; color: #999;">Higher NDVI = More Forest</span></p>
+          <div style="display: flex; gap: 4px; align-items: center; margin-bottom: 4px;">
+            <div style="width: 20px; height: 20px; background: #e74c3c; border-radius: 3px;"></div>
+            <span><strong>Severe</strong> (NDVI &lt; 0.20)</span>
+          </div>
+          <div style="display: flex; gap: 4px; align-items: center; margin-bottom: 4px;">
+            <div style="width: 20px; height: 20px; background: #e67e22; border-radius: 3px;"></div>
+            <span><strong>Moderate</strong> (0.20-0.30)</span>
+          </div>
+          <div style="display: flex; gap: 4px; align-items: center; margin-bottom: 4px;">
+            <div style="width: 20px; height: 20px; background: #f1c40f; border-radius: 3px;"></div>
+            <span><strong>Fair</strong> (0.30-0.40)</span>
+          </div>
+          <div style="display: flex; gap: 4px; align-items: center;">
+            <div style="width: 20px; height: 20px; background: #27ae60; border-radius: 3px;"></div>
+            <span><strong>Healthy</strong> (0.40+)</span>
           </div>
         </div>
       </div>

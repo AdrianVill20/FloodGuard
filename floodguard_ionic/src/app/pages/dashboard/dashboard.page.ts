@@ -290,7 +290,28 @@ export class DashboardPage implements OnInit, AfterViewInit {
     this.loadYearSnapshot(this.selectedYear);
   }
 
+  // --- Get color based on NDVI value (vegetation health) ---
+  // Green (healthy) → Yellow (moderate) → Red (deforested)
+  getNDVIColor(ndvi: number | null | undefined): string {
+    if (ndvi === null || ndvi === undefined) return '#999';
+    if (ndvi >= 0.40) return '#27ae60'; // Green — Healthy forest
+    if (ndvi >= 0.30) return '#f1c40f'; // Yellow — Moderate vegetation
+    if (ndvi >= 0.20) return '#e67e22'; // Orange — Some deforestation
+    return '#e74c3c'; // Red — Severe deforestation
+  }
+
+  // --- Get color based on Flood Risk value ---
+  // Green (low risk) → Yellow (moderate) → Red (high risk)
+  getFloodRiskLevelColor(floodRisk: number | null | undefined): string {
+    if (floodRisk === null || floodRisk === undefined) return '#999';
+    if (floodRisk < 0.40) return '#27ae60'; // Green — Low risk
+    if (floodRisk < 0.60) return '#f1c40f'; // Yellow — Moderate risk
+    if (floodRisk < 0.75) return '#e67e22'; // Orange — High risk
+    return '#e74c3c'; // Red — Critical risk
+  }
+
   // --- Load year snapshot for MAP slider ---
+  // Now dynamically colors based on NDVI or Flood Risk depending on activeLayer
   loadYearSnapshot(year: number) {
     this.isSliderLoading = true;
     this.selectedYear    = year;
@@ -308,10 +329,20 @@ export class DashboardPage implements OnInit, AfterViewInit {
               style: (feature: any) => {
                 const name  = feature.properties.barangay;
                 const entry = lookup[name];
-                const risk  = entry ? entry.risk_level : 'LOW';
+                
+                // Choose color based on active layer (NDVI or Flood Risk)
+                let fillColor = '#999';
+                if (entry) {
+                  if (this.activeLayer === 'ndvi') {
+                    fillColor = this.getNDVIColor(entry.ndvi);
+                  } else {
+                    fillColor = this.getFloodRiskLevelColor(entry.flood_risk);
+                  }
+                }
+                
                 return {
-                  fillColor  : this.getRiskColor(risk),
-                  fillOpacity: 0.6,
+                  fillColor  : fillColor,
+                  fillOpacity: 0.7,
                   color      : '#333',
                   weight     : 1
                 };
@@ -319,12 +350,14 @@ export class DashboardPage implements OnInit, AfterViewInit {
               onEachFeature: (feature: any, layer: any) => {
                 const name  = feature.properties.barangay;
                 const entry = lookup[name];
+                const ndvi  = entry?.ndvi?.toFixed(4) || 'N/A';
+                const risk  = entry?.flood_risk?.toFixed(4) || 'N/A';
+                
                 layer.bindPopup(`
                   <strong>${name}</strong><br/>
                   Year: <b>${year}${this.partialYears.includes(year) ? ' (partial)' : ''}</b><br/>
-                  Risk: <b style="color:${this.getRiskColor(entry?.risk_level)}">${entry?.risk_level || 'N/A'}</b><br/>
-                  Flood Risk Index: ${entry?.flood_risk?.toFixed(4) || 'N/A'}<br/>
-                  NDVI: ${entry?.ndvi?.toFixed(4) || 'N/A'}
+                  <span style="color:${this.getFloodRiskLevelColor(entry?.flood_risk)}">🌊 Flood Risk: ${risk}</span><br/>
+                  <span style="color:${this.getNDVIColor(entry?.ndvi)}">🌳 NDVI: ${ndvi}</span>
                 `, { autoPan: false });
 
                 layer.on('click', (e: any) => {
@@ -334,10 +367,10 @@ export class DashboardPage implements OnInit, AfterViewInit {
                 });
 
                 layer.on('mouseover', function(this: any) {
-                  this.setStyle({ weight: 2, fillOpacity: 0.8 });
+                  this.setStyle({ weight: 2, fillOpacity: 0.9 });
                 });
                 layer.on('mouseout', function(this: any) {
-                  this.setStyle({ weight: 1, fillOpacity: 0.6 });
+                  this.setStyle({ weight: 1, fillOpacity: 0.7 });
                 });
               }
             });
@@ -589,10 +622,18 @@ export class DashboardPage implements OnInit, AfterViewInit {
   }
 
   // --- Switch layer ---
+  // Also refreshes map colors when switching between NDVI and Flood Risk
   switchLayer(layer: string) {
     this.activeLayer = layer;
+    
+    // Refresh heatmap for selected barangay
     if (this.selectedBarangay) {
       this.renderHeatmap(layer);
+    }
+    
+    // Refresh map colors for current year
+    if (this.map && this.yearLayers[this.selectedYear]) {
+      this.loadYearSnapshot(this.selectedYear);
     }
   }
 
