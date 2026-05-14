@@ -1,14 +1,9 @@
-<!-- ============================================================
-     FloodGuard ASEAN — Dashboard Page
-     Command Center Slate Redesign
-     ============================================================ -->
-<!-- ── Header ────────────────────────────────────────────── -->
 <header class="fg-header">
   <div class="fg-header__brand">
-    <div class="fg-header__mark">FG</div>
+    <img src="assets/icon/FG.png" alt="FG Logo" class="fg-header__mark">
     <div class="fg-header__titles">
-      <span class="fg-header__name">FloodGuard <span class="fg-header__asean">ASEAN</span></span>
-      <span class="fg-eyebrow">Cebu City · v4.2</span>
+      <span class="fg-header__name">FloodGuard</span>
+      <span class="fg-eyebrow">Cebu City</span>
     </div>
   </div>
   <div class="fg-header__right">
@@ -19,7 +14,6 @@
   </div>
 </header>
 <ion-content>
-  <!-- Task 4: Pull-to-refresh -->
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content
       pullingIcon="chevron-down-circle-outline"
@@ -28,7 +22,7 @@
       refreshingText="Refreshing…">
     </ion-refresher-content>
   </ion-refresher>
-  <!-- ── Active Alert Ticker ──────────────────────────────── -->
+
   <div class="fg-ticker" *ngIf="summary.HIGH > 0">
     <span class="fg-eyebrow fg-ticker__label">Active Alert</span>
     <span class="fg-ticker__text">
@@ -36,7 +30,7 @@
       Monitoring active across all stations
     </span>
   </div>
-  <!-- ── Stat Cards ───────────────────────────────────────── -->
+
   <div class="fg-stat-grid">
     <div class="fg-stat fg-stat--danger">
       <p class="fg-eyebrow">Critical</p>
@@ -54,7 +48,7 @@
       <p class="fg-stat__hint">Barangays at low risk</p>
     </div>
   </div>
-  <!-- ── Tab Bar ──────────────────────────────────────────── -->
+
   <div class="fg-tabs-wrap">
     <div class="fg-tabs" role="tablist">
       <button role="tab" [class.is-active]="selectedTab === 'map'"
@@ -68,14 +62,12 @@
     </div>
     <span class="fg-chip fg-chip--primary">80 Barangays</span>
   </div>
-  <!-- ══════════════════════════════════════════════════════
-       MAP TAB
-       ══════════════════════════════════════════════════════ -->
+
   <div [hidden]="selectedTab !== 'map'" class="fg-map-section">
     <div *ngIf="!selectedBarangay" class="fg-map-hint fg-eyebrow">
       Click any barangay on the map to view detailed zones and time-series data
     </div>
-    <!-- Selected barangay bar -->
+
     <div class="fg-barangay-bar" *ngIf="selectedBarangay">
       <div class="fg-barangay-bar__name">
         <ion-icon name="location-outline" style="color: var(--fg-primary)"></ion-icon>
@@ -92,41 +84,51 @@
                 (click)="switchLayer('ndvi')">
           🌿 NDVI
         </button>
-        <!-- Task 2: Heatmap toggle button -->
+        
+        <button class="fg-layer-btn"
+                [class.is-active]="showBoundaries"
+                (click)="toggleBoundaries()">
+          {{ showBoundaries ? '🗺 Borders On' : '🗺 Borders Off' }}
+        </button>
+
         <button class="fg-layer-btn"
                 [class.is-active]="heatmapVisible"
                 (click)="toggleHeatmap()">
           {{ heatmapVisible ? '👁 Dots On' : '🚫 Dots Off' }}
         </button>
+        
         <button class="fg-layer-btn" (click)="resetMap()">
           ↩ Reset
         </button>
       </div>
     </div>
-    <!-- ── Leaflet Map container ─────────────────────────── -->
+
     <div class="fg-map-wrap">
       <div id="flood-map"></div>
-      <div class="fg-map-legend fg-glass">
-        <p class="fg-eyebrow" style="margin-bottom: 8px">Risk Levels</p>
-        <div class="fg-legend-item">
-          <span class="fg-legend-dot fg-legend-dot--danger"></span>
-          <span>High</span>
+      
+      <div class="fg-map-legend fg-glass" style="width: 280px;">
+        <p class="fg-eyebrow" style="margin-bottom: 8px">Legend: {{ activeLayer === 'flood' ? 'Flood Risk' : 'NDVI' }}</p>
+        
+        <div *ngIf="activeLayer === 'flood'">
+          <div style="height: 12px; border-radius: 6px; background: linear-gradient(to right, #add8e6, #4169e1, #0000cd, #8a2be2, #ff0000); margin-bottom: 6px;"></div>
+          <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: #555;">
+            <span>Low Risk</span>
+            <span>Moderate</span>
+            <span>Severe Danger</span>
+          </div>
         </div>
-        <div class="fg-legend-item">
-          <span class="fg-legend-dot fg-legend-dot--warning"></span>
-          <span>Moderate</span>
-        </div>
-        <div class="fg-legend-item">
-          <span class="fg-legend-dot fg-legend-dot--success"></span>
-          <span>Low</span>
-        </div>
-        <div class="fg-legend-item">
-          <span class="fg-legend-dot fg-legend-dot--dim"></span>
-          <span>No Data</span>
+
+        <div *ngIf="activeLayer === 'ndvi'">
+          <div style="height: 12px; border-radius: 6px; background: linear-gradient(to right, #a0522d, #d2b48c, #f1c40f, #2ecc71, #006400); margin-bottom: 6px;"></div>
+          <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: #555;">
+            <span>Barren / Deforested</span>
+            <span>Transition</span>
+            <span>Healthy Forest</span>
+          </div>
         </div>
       </div>
     </div>
-    <!-- ── Year Slider Dock ──────────────────────────────── -->
+
     <div class="fg-slider-dock fg-glass">
       <div class="fg-slider-head">
         <span class="fg-eyebrow">Data Year</span>
@@ -151,7 +153,7 @@
         <span *ngFor="let y of years">{{ y }}</span>
       </div>
     </div>
-    <!-- ── Time-Series Chart ─────────────────────────────── -->
+
     <div class="fg-chart-panel fg-card" *ngIf="showChart && chartData">
       <div class="fg-chart-header">
         <div>
@@ -171,7 +173,7 @@
       </div>
       <canvas id="timeseries-chart" class="fg-chart-canvas"></canvas>
       <p class="fg-eyebrow fg-chart-note">* 2026 is partial data (Jan–Apr only)</p>
-      <!-- Data Table -->
+
       <div class="fg-data-table-wrap">
         <table class="fg-data-table fg-mono">
           <thead>
@@ -204,12 +206,7 @@
       </div>
     </div>
   </div>
-  <!-- /MAP TAB -->
-  <!-- ══════════════════════════════════════════════════════
-       BARANGAYS LIST TAB
-       ══════════════════════════════════════════════════════ -->
   <div [hidden]="selectedTab !== 'list'" class="fg-list-section">
-    <!-- Task 1: Fixed search bar -->
     <div class="fg-search-wrap fg-card">
       <ion-icon name="search-outline" class="fg-search-icon"></ion-icon>
       <input
@@ -225,7 +222,6 @@
       <kbd class="fg-kbd">⌘K</kbd>
     </div>
 
-    <!-- ── Table Year Slider ─────────────────────────────── -->
     <div class="fg-slider-dock fg-glass" style="margin: 8px 16px 0">
       <div class="fg-slider-head">
         <span class="fg-eyebrow">Table Year</span>
@@ -251,20 +247,19 @@
       </div>
     </div>
 
-    <!-- Result count -->
     <p class="fg-list-count fg-eyebrow" *ngIf="searchQuery">
       {{ filteredBarangays.length }} / {{ barangays.length }} barangays
     </p>
-    <!-- Loading -->
+
     <div class="fg-loading-box" *ngIf="isLoading || isTableSliderLoading">
       <ion-spinner name="crescent" color="primary"></ion-spinner>
       <p>Loading barangay data…</p>
     </div>
-    <!-- Empty state -->
+
     <div class="fg-empty" *ngIf="!isLoading && !isTableSliderLoading && filteredBarangays.length === 0">
       <p class="fg-eyebrow">No results for "{{ searchQuery }}"</p>
     </div>
-    <!-- Barangay Table -->
+
     <div class="fg-table-wrap fg-card" *ngIf="!isLoading && !isTableSliderLoading && filteredBarangays.length > 0">
       <table class="fg-table">
         <thead>
@@ -318,10 +313,6 @@
       </table>
     </div>
   </div>
-  <!-- /LIST TAB -->
-  <!-- ══════════════════════════════════════════════════════
-       REPORTS TAB
-       ══════════════════════════════════════════════════════ -->
   <div [hidden]="selectedTab !== 'reports'" class="fg-reports-section">
     <div class="fg-loading-box" *ngIf="reportLoading">
       <ion-spinner name="crescent" color="primary"></ion-spinner>
@@ -360,5 +351,4 @@
       </div>
     </div>
   </div>
-  <!-- /REPORTS TAB -->
-</ion-content>
+  </ion-content>
