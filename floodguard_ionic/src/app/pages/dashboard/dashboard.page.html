@@ -168,6 +168,45 @@
                      class="fg-slider-spinner">
         </ion-spinner>
       </div>
+
+      <!-- Animation Controls -->
+      <div class="fg-animation-controls">
+        <div class="fg-animation-buttons">
+          <button class="fg-anim-btn"
+                  [class.is-active]="isAnimating"
+                  (click)="isAnimating ? pauseAnimation() : playAnimation()"
+                  [disabled]="false">
+            <ion-icon [name]="isAnimating ? 'pause-outline' : 'play-outline'"></ion-icon>
+            <span class="fg-anim-btn__label">{{ isAnimating ? 'Pause' : 'Play' }}</span>
+          </button>
+          <button class="fg-anim-btn" 
+                  (click)="stopAnimation()"
+                  [disabled]="!isAnimating && sliderYear === 2010">
+            <ion-icon name="stop-outline"></ion-icon>
+            <span class="fg-anim-btn__label">Stop</span>
+          </button>
+        </div>
+
+        <div class="fg-speed-controls">
+          <span class="fg-eyebrow fg-speed-label">Speed:</span>
+          <button class="fg-speed-btn"
+                  [class.is-active]="animationSpeed === 'slow'"
+                  (click)="changeAnimationSpeed('slow')">
+            🐢 Slow
+          </button>
+          <button class="fg-speed-btn"
+                  [class.is-active]="animationSpeed === 'medium'"
+                  (click)="changeAnimationSpeed('medium')">
+            ⚡ Med
+          </button>
+          <button class="fg-speed-btn"
+                  [class.is-active]="animationSpeed === 'fast'"
+                  (click)="changeAnimationSpeed('fast')">
+            🚀 Fast
+          </button>
+        </div>
+      </div>
+
       <ion-range
         [min]="2010" [max]="2026" [step]="1"
         [snaps]="true" [ticks]="true"

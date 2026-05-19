@@ -559,6 +559,219 @@ ion-content {
   .fg-bar { flex: 1; }
 }
 
+/* ============================================================
+   ANIMATION / TIMELAPSE CONTROLS
+   ============================================================ */
+
+.fg-animation-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 12px;
+}
+
+.fg-animation-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fg-anim-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(var(--fg-primary-rgb, 26, 86, 160), 0.15);
+  border: 1px solid rgba(var(--fg-primary-rgb, 26, 86, 160), 0.3);
+  border-radius: 6px;
+  color: var(--fg-primary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--fg-font-base);
+  min-height: 32px;
+
+  ion-icon {
+    font-size: 16px;
+  }
+
+  .fg-anim-btn__label {
+    display: inline;
+    @media (max-width: 360px) {
+      display: none;
+    }
+  }
+
+  &:hover:not(:disabled) {
+    background: rgba(var(--fg-primary-rgb, 26, 86, 160), 0.25);
+    border-color: rgba(var(--fg-primary-rgb, 26, 86, 160), 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(26, 86, 160, 0.2);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &.is-active {
+    background: rgba(231, 76, 60, 0.2);
+    border-color: rgba(231, 76, 60, 0.4);
+    color: #e74c3c;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.fg-speed-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fg-speed-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--fg-text-muted);
+  display: none;
+  @media (min-width: 480px) {
+    display: inline;
+  }
+}
+
+.fg-speed-btn {
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: var(--fg-text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--fg-font-mono);
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--fg-text);
+  }
+
+  &.is-active {
+    background: var(--fg-primary);
+    border-color: var(--fg-primary);
+    color: var(--fg-primary-ink);
+    box-shadow: 0 2px 8px rgba(26, 86, 160, 0.25);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+/* ============================================================
+   MAP BARANGAY LABELS
+   ============================================================ */
+
+.fg-invisible-marker {
+  display: none !important;
+}
+
+.fg-barangay-tooltip {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.fg-barangay-tooltip.leaflet-tooltip-top::before,
+.fg-barangay-tooltip.leaflet-tooltip-bottom::before,
+.fg-barangay-tooltip.leaflet-tooltip-left::before,
+.fg-barangay-tooltip.leaflet-tooltip-right::before {
+  display: none !important;
+}
+
+.fg-city-tooltip {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.fg-city-tooltip.leaflet-tooltip-top::before,
+.fg-city-tooltip.leaflet-tooltip-bottom::before,
+.fg-city-tooltip.leaflet-tooltip-left::before,
+.fg-city-tooltip.leaflet-tooltip-right::before {
+  display: none !important;
+}
+
+.fg-barangay-tooltip-content {
+  background: rgba(255, 255, 255, 0.9);
+  color: #000000;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--fg-font-mono);
+  letter-spacing: 0.02em;
+  text-align: center;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(4px);
+  display: inline-block;
+}
+
+.leaflet-tooltip-content {
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 1.2 !important;
+}
+
+/* Barangay labels (detailed) */
+.fg-barangay-tooltip .leaflet-tooltip-content {
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #000000 !important;
+  padding: 4px 8px !important;
+  border-radius: 3px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  font-family: var(--fg-font-mono) !important;
+  letter-spacing: 0.02em !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+  display: inline-block !important;
+}
+
+/* City label (zoomed out) */
+.fg-city-tooltip .leaflet-tooltip-content {
+  background: rgba(26, 86, 160, 0.85) !important;
+  color: #ffffff !important;
+  padding: 8px 16px !important;
+  border-radius: 4px !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  font-family: var(--fg-font-base) !important;
+  letter-spacing: 0.01em !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  display: inline-block !important;
+  text-transform: uppercase !important;
+}
+
 .fg-text-dim { color: var(--fg-text-dim); }
 
 /* ── Reports Section ──────────────────────────────────────── */

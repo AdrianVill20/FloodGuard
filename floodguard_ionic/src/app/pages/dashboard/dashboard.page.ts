@@ -2,7 +2,7 @@
 // src/app/pages/dashboard/dashboard.page.ts
 // FloodGuard ASEAN — Full Dashboard with Timeline Slider
 // ============================================================
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -18,7 +18,7 @@ import 'leaflet.heat';
   standalone: true,
   imports: [CommonModule, FormsModule, IonicModule, RouterModule]
 })
-export class DashboardPage implements OnInit, AfterViewInit {
+export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
   // --- State ---
   barangays        : any[]   = [];
   filteredBarangays: any[]   = [];
@@ -41,6 +41,16 @@ export class DashboardPage implements OnInit, AfterViewInit {
   heatmapVisible   : boolean = true;
   showBoundaries   : boolean = true;
 
+  // Animation/Timelapse state
+  isAnimating       : boolean = false;
+  animationSpeed    : string  = 'medium'; // 'slow', 'medium', 'fast'
+  private animationInterval: any = null;
+  private animationSpeeds   : any = {
+    'slow'  : 2000,  // 2 seconds per year
+    'medium': 1000,  // 1 second per year
+    'fast'  : 500    // 0.5 second per year
+  };
+
   // Table sorting
   sortColumn       : string  = 'barangay';
   sortDirection    : string  = 'asc'; // 'asc' or 'desc'
@@ -60,6 +70,8 @@ export class DashboardPage implements OnInit, AfterViewInit {
   private clickOverlayGroup : any; // Layer group for invisible interactive circles
   private currentPixels     : any[] = [];
   private yearLayers        : any   = {};
+  private labelLayers       : any   = {}; // Store label layers for each year
+  private cityLabel         : any   = null; // City-level label
 
   // Pending heatmap subscription
   private heatmapSub   : any   = null;
@@ -287,7 +299,66 @@ export class DashboardPage implements OnInit, AfterViewInit {
     };
     L.control.layers(baseMaps, undefined, { position: 'topright' }).addTo(this.map);
 
+    // Create the city-level label (Cebu City)
+    this.createCityLabel();
+
+    // Listen to zoom changes to show/hide labels
+    this.map.on('zoomend', () => {
+      const currentZoom = this.map.getZoom();
+
+      // Show/hide city label (when zoomed out)
+      if (this.cityLabel) {
+        if (currentZoom < 13) {
+          if (!this.map.hasLayer(this.cityLabel)) {
+            this.cityLabel.addTo(this.map);
+          }
+        } else {
+          if (this.map.hasLayer(this.cityLabel)) {
+            this.map.removeLayer(this.cityLabel);
+          }
+        }
+      }
+
+      // Show/hide barangay labels (when zoomed in)
+      Object.values(this.labelLayers).forEach((labelLayer: any) => {
+        if (currentZoom >= 13) {
+          if (!this.map.hasLayer(labelLayer)) {
+            labelLayer.addTo(this.map);
+          }
+        } else {
+          if (this.map.hasLayer(labelLayer)) {
+            this.map.removeLayer(labelLayer);
+          }
+        }
+      });
+    });
+
     this.loadYearSnapshot(this.selectedYear);
+  }
+
+  // --- Create city-level label (Cebu City) ---
+  private createCityLabel(): void {
+    // Position at the center of the map view
+    const cityCenter = L.latLng(10.380, 123.870);
+
+    const marker = L.marker(cityCenter, {
+      icon: L.icon({
+        iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        iconSize: [1, 1],
+        className: 'fg-invisible-marker'
+      })
+    });
+
+    const tooltip = L.tooltip({
+      permanent: true,
+      direction: 'center',
+      className: 'fg-city-tooltip'
+    });
+
+    marker.bindTooltip(tooltip);
+    tooltip.setContent('Cebu City');
+
+    this.cityLabel = L.layerGroup([marker]);
   }
 
   // --- Get color based on NDVI value (vegetation health) ---
@@ -315,9 +386,17 @@ export class DashboardPage implements OnInit, AfterViewInit {
   loadYearSnapshot(year: number) {
     this.isSliderLoading = true;
     this.selectedYear    = year;
+    
+    // Remove old layers
     Object.values(this.yearLayers).forEach((layer: any) => {
       if (this.map.hasLayer(layer)) this.map.removeLayer(layer);
     });
+    
+    // Remove old labels
+    Object.values(this.labelLayers).forEach((labelLayer: any) => {
+      if (this.map.hasLayer(labelLayer)) this.map.removeLayer(labelLayer);
+    });
+    
     this.api.getYearSnapshot(year).subscribe({
       next: (response: any) => {
         const data = response.data;
@@ -380,13 +459,72 @@ export class DashboardPage implements OnInit, AfterViewInit {
               layer.addTo(this.map);
             }
 
-            this.yearLayers[year] = layer;
-            this.isSliderLoading  = false;
+            // Create and add labels
+            const labelLayer = this.createBarangayLabels(geojson, lookup);
+            
+            // Only add labels if zoom level is appropriate
+            if (this.map.getZoom() >= 13) {
+              labelLayer.addTo(this.map);
+            }
+
+            // Show/hide city label based on zoom
+            if (this.cityLabel) {
+              if (this.map.getZoom() < 13) {
+                if (!this.map.hasLayer(this.cityLabel)) {
+                  this.cityLabel.addTo(this.map);
+                }
+              } else {
+                if (this.map.hasLayer(this.cityLabel)) {
+                  this.map.removeLayer(this.cityLabel);
+                }
+              }
+            }
+
+            this.yearLayers[year]  = layer;
+            this.labelLayers[year] = labelLayer;
+            this.isSliderLoading   = false;
           }
         });
       },
       error: () => { this.isSliderLoading = false; }
     });
+  }
+
+  // --- Create barangay label markers ---
+  private createBarangayLabels(geojson: any, lookup: any): any {
+    const labelGroup = L.layerGroup();
+
+    geojson.features.forEach((feature: any) => {
+      const name = feature.properties.barangay;
+
+      // Get the center of the polygon
+      const geoJsonLayer = L.geoJSON(feature);
+      const bounds = geoJsonLayer.getBounds();
+      const center = bounds.getCenter();
+
+      // Create a point marker at the center (invisible, just for positioning)
+      const pointMarker = L.marker(center, {
+        icon: L.icon({
+          iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+          iconSize: [1, 1],
+          className: 'fg-invisible-marker'
+        })
+      });
+
+      // Add a permanent tooltip with the barangay name
+      const tooltip = L.tooltip({
+        permanent: true,
+        direction: 'center',
+        className: 'fg-barangay-tooltip'
+      });
+
+      pointMarker.bindTooltip(tooltip);
+      tooltip.setContent(name);
+
+      labelGroup.addLayer(pointMarker);
+    });
+
+    return labelGroup;
   }
 
   // --- Map year slider change ---
@@ -732,5 +870,96 @@ export class DashboardPage implements OnInit, AfterViewInit {
     if (risk === 'HIGH')     return 'danger';
     if (risk === 'MODERATE') return 'warning';
     return 'success';
+  }
+
+  // ============================================================
+  // TIMELAPSE ANIMATION METHODS
+  // ============================================================
+
+  // --- Play animation: cycle through years from 2010 to 2026 ---
+  playAnimation() {
+    if (this.isAnimating) return; // Already playing
+
+    this.isAnimating = true;
+    
+    // Reset to 2010 if at the end
+    if (this.sliderYear >= 2026) {
+      this.sliderYear = 2010;
+    }
+
+    const speed = this.animationSpeeds[this.animationSpeed as keyof typeof this.animationSpeeds] || 1000;
+
+    this.animationInterval = setInterval(() => {
+      if (this.sliderYear < 2026) {
+        this.sliderYear += 1;
+        this.loadYearSnapshot(this.sliderYear);
+        
+        // Also update heatmap if a barangay is selected
+        if (this.selectedBarangay) {
+          this.loadBarangayHeatmap(this.selectedBarangay);
+        }
+      } else {
+        // Loop back to start
+        this.sliderYear = 2010;
+        this.loadYearSnapshot(this.sliderYear);
+        if (this.selectedBarangay) {
+          this.loadBarangayHeatmap(this.selectedBarangay);
+        }
+      }
+    }, speed);
+  }
+
+  // --- Pause animation ---
+  pauseAnimation() {
+    if (!this.isAnimating) return;
+    
+    this.isAnimating = false;
+    if (this.animationInterval) {
+      clearInterval(this.animationInterval);
+      this.animationInterval = null;
+    }
+  }
+
+  // --- Stop animation and reset to 2010 ---
+  stopAnimation() {
+    this.isAnimating = false;
+    if (this.animationInterval) {
+      clearInterval(this.animationInterval);
+      this.animationInterval = null;
+    }
+    
+    this.sliderYear = 2010;
+    this.loadYearSnapshot(2010);
+    if (this.selectedBarangay) {
+      this.loadBarangayHeatmap(this.selectedBarangay);
+    }
+  }
+
+  // --- Change animation speed ---
+  changeAnimationSpeed(speed: string) {
+    const wasAnimating = this.isAnimating;
+    
+    // Pause current animation if running
+    if (this.isAnimating) {
+      this.pauseAnimation();
+    }
+    
+    this.animationSpeed = speed;
+    
+    // Resume with new speed if it was animating
+    if (wasAnimating) {
+      this.playAnimation();
+    }
+  }
+
+  // --- Clean up animation on component destroy ---
+  ngOnDestroy() {
+    if (this.animationInterval) {
+      clearInterval(this.animationInterval);
+      this.animationInterval = null;
+    }
+    if (this.heatmapSub) {
+      this.heatmapSub.unsubscribe();
+    }
   }
 }
