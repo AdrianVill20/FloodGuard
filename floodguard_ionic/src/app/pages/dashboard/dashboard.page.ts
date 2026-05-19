@@ -9,7 +9,7 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api';
 import * as L from 'leaflet';
-import 'leaflet.heat';
+// import 'leaflet.heat'; // (commented — kept for future heatmap restore)
 
 @Component({
   selector: 'app-dashboard',
@@ -66,7 +66,7 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
   // Map
   private map               : any;
   private geojsonLayer      : any;
-  private heatLayer         : any;
+  // private heatLayer         : any; // (kept for future heatmap restore)
   private clickOverlayGroup : any; // Layer group for invisible interactive circles
   private currentPixels     : any[] = [];
   private yearLayers        : any   = {};
@@ -200,7 +200,7 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
     if (this.heatmapVisible) {
       this.renderHeatmap(this.activeLayer);
     } else {
-      if (this.heatLayer) this.map.removeLayer(this.heatLayer);
+      // if (this.heatLayer) this.map.removeLayer(this.heatLayer); // (heatmap commented)
       if (this.clickOverlayGroup) this.clickOverlayGroup.clearLayers();
     }
   }
@@ -623,10 +623,10 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
       this.heatmapSub = null;
     }
 
-    if (this.heatLayer) {
-      this.map.removeLayer(this.heatLayer);
-      this.heatLayer = null;
-    }
+    // if (this.heatLayer) { // (heatmap commented — kept for future restore)
+    //   this.map.removeLayer(this.heatLayer);
+    //   this.heatLayer = null;
+    // }
 
     if (this.clickOverlayGroup) {
       this.clickOverlayGroup.clearLayers();
@@ -650,10 +650,10 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
 
   // --- Render heatmap dots and invisible overlay ---
   renderHeatmap(layerType: string) {
-    if (this.heatLayer) {
-      this.map.removeLayer(this.heatLayer);
-      this.heatLayer = null;
-    }
+    // if (this.heatLayer) { // (heatmap commented — kept for future restore)
+    //   this.map.removeLayer(this.heatLayer);
+    //   this.heatLayer = null;
+    // }
 
     if (this.clickOverlayGroup) {
       this.clickOverlayGroup.clearLayers();
@@ -661,88 +661,81 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
 
     if (!this.currentPixels.length) return;
 
-    // --- Custom gradients ---
-    // NDVI: dark green (healthy/low intensity) → red (barren/high intensity)
-    const ndviGradient  = { 0.0: 'darkgreen', 0.3: 'yellow', 0.6: 'orange', 1.0: 'red' };
-    // Flood: cyan (low risk) → purple (high risk)
-    const floodGradient = { 0.2: 'cyan', 0.5: 'blue', 0.8: 'darkblue', 1.0: 'purple' };
+    // --- HEATMAP CODE (COMMENTED OUT - TO BE RESTORED LATER) ---
+    // /* 
+    // // --- Custom gradients ---
+    // // NDVI: dark green (healthy/low intensity) → red (barren/high intensity)
+    // const ndviGradient  = { 0.0: 'darkgreen', 0.3: 'yellow', 0.6: 'orange', 1.0: 'red' };
+    // // Flood: cyan (low risk) → purple (high risk)
+    // const floodGradient = { 0.2: 'cyan', 0.5: 'blue', 0.8: 'darkblue', 1.0: 'purple' };
 
-    // --- NDVI: compute data-driven max from positive pixels only ---
-    // We do NOT use a hardcoded ceiling like 0.8 because real pixel values may
-    // cluster in 0.2–0.5, making everything look barren against a 0.8 scale.
-    // Instead, find the actual max positive NDVI in this dataset, then use that
-    // as the "fully healthy" anchor. Combined with max:1.0 on the heatLayer,
-    // the gradient is still globally absolute but calibrated to real data range.
-    const positiveNdviPixels = this.currentPixels
-      .map((p: any) => (p.ndvi !== null && p.ndvi !== undefined) ? p.ndvi : 0)
-      .filter((v: number) => v > 0);
+    // // --- NDVI: compute data-driven max from positive pixels only ---
+    // const positiveNdviPixels = this.currentPixels
+    //   .map((p: any) => (p.ndvi !== null && p.ndvi !== undefined) ? p.ndvi : 0)
+    //   .filter((v: number) => v > 0);
 
-    // Healthy anchor: use the 90th-percentile positive NDVI value so a few
-    // outlier high pixels don't compress everything else toward "barren".
-    // Falls back to 0.5 if there are no positive pixels at all.
-    let ndviHealthyMax = 0.5;
-    if (positiveNdviPixels.length > 0) {
-      const sorted = [...positiveNdviPixels].sort((a, b) => a - b);
-      const p90idx = Math.floor(sorted.length * 0.90);
-      ndviHealthyMax = sorted[p90idx] ?? sorted[sorted.length - 1];
-      // Enforce a minimum floor so the scale never collapses on sparse data
-      ndviHealthyMax = Math.max(ndviHealthyMax, 0.3);
-    }
+    // let ndviHealthyMax = 0.5;
+    // if (positiveNdviPixels.length > 0) {
+    //   const sorted = [...positiveNdviPixels].sort((a, b) => a - b);
+    //   const p90idx = Math.floor(sorted.length * 0.90);
+    //   ndviHealthyMax = sorted[p90idx] ?? sorted[sorted.length - 1];
+    //   ndviHealthyMax = Math.max(ndviHealthyMax, 0.3);
+    // }
 
-    const heatData = this.currentPixels.map((p: any) => {
-      let intensity = 0;
+    // const heatData = this.currentPixels.map((p: any) => {
+    //   let intensity = 0;
 
-      if (layerType === 'ndvi') {
-        const rawNdvi = (p.ndvi !== null && p.ndvi !== undefined) ? p.ndvi : 0;
+    //   if (layerType === 'ndvi') {
+    //     const rawNdvi = (p.ndvi !== null && p.ndvi !== undefined) ? p.ndvi : 0;
 
-        if (rawNdvi < 0) {
-          // Water / cloud pixels: 0 intensity → dark green end, not red
-          intensity = 0;
-        } else {
-          // Remap [0 … ndviHealthyMax] → intensity [1.0 … 0.0]
-          // Anything at or above the healthy anchor maps to 0 (fully green).
-          // Anything at 0 maps to 1.0 (fully red / barren).
-          const clampedNdvi = Math.min(rawNdvi, ndviHealthyMax);
-          intensity = 1.0 - (clampedNdvi / ndviHealthyMax);
-          intensity = Math.max(0, Math.min(1.0, intensity));
-        }
+    //     if (rawNdvi < 0) {
+    //       intensity = 0;
+    //     } else {
+    //       const clampedNdvi = Math.min(rawNdvi, ndviHealthyMax);
+    //       intensity = 1.0 - (clampedNdvi / ndviHealthyMax);
+    //       intensity = Math.max(0, Math.min(1.0, intensity));
+    //     }
 
-      } else if (layerType === 'flood') {
-        // Backend may send flood risk as 0–100 (percentage) or 0.0–1.0.
-        // Normalise to 0.0–1.0 regardless.
-        let rawFlood = (p.flood !== null && p.flood !== undefined) ? p.flood : 0;
-        if (rawFlood > 1.0) {
-          rawFlood = rawFlood / 100.0;
-        }
-        intensity = Math.max(0, Math.min(1.0, rawFlood));
-      }
+    //   } else if (layerType === 'flood') {
+    //     let rawFlood = (p.flood !== null && p.flood !== undefined) ? p.flood : 0;
+    //     if (rawFlood > 1.0) {
+    //       rawFlood = rawFlood / 100.0;
+    //     }
+    //     intensity = Math.max(0, Math.min(1.0, rawFlood));
+    //   }
 
-      return [p.lat, p.lon, intensity];
-    });
+    //   return [p.lat, p.lon, intensity];
+    // });
 
-    const activeGradient = layerType === 'flood' ? floodGradient : ndviGradient;
+    // const activeGradient = layerType === 'flood' ? floodGradient : ndviGradient;
 
-    this.heatLayer = (L as any).heatLayer(heatData, {
-      radius    : 20,
-      blur      : 15,
-      minOpacity: 0.6,
-      maxZoom   : 16,
-      // FIX: lock the gradient to an absolute global scale of 1.0.
-      // Without this, Leaflet.heat autoscales to the highest value in the
-      // current dataset, making every barangay look identically "severe".
-      max       : 1.0,
-      gradient  : activeGradient
-    });
+    // this.heatLayer = (L as any).heatLayer(heatData, {
+    //   radius    : 20,
+    //   blur      : 15,
+    //   minOpacity: 0.6,
+    //   maxZoom   : 16,
+    //   max       : 1.0,
+    //   gradient  : activeGradient
+    // });
 
+    // if (this.heatmapVisible) {
+    //   this.heatLayer.addTo(this.map);
+    // }
+    // */
+    // --- END HEATMAP CODE ---
+
+    // --- VISIBLE DOTS COLORED BY DANGER ZONE LEVEL (matches legend) ---
     if (this.heatmapVisible) {
-      this.heatLayer.addTo(this.map);
-
-      // Create invisible clickable overlay for pixel-level popups
       for (const p of this.currentPixels) {
+        const dotColor = layerType === 'ndvi'
+          ? this.getNDVIColor(p.ndvi)
+          : this.getFloodRiskLevelColor(p.flood);
+
         const circle = L.circleMarker([p.lat, p.lon], {
-          radius     : 12,
-          opacity    : 0,
-          fillOpacity: 0,
+          radius     : 6,
+          opacity    : 0.8,
+          fillOpacity: 0.7,
+          color      : dotColor,
           interactive: true
         });
 
@@ -819,10 +812,10 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
   resetMap() {
     this.selectedBarangay = '';
     this.currentPixels    = [];
-    if (this.heatLayer) {
-      this.map.removeLayer(this.heatLayer);
-      this.heatLayer = null;
-    }
+    // if (this.heatLayer) { // (heatmap commented — kept for future restore)
+    //   this.map.removeLayer(this.heatLayer);
+    //   this.heatLayer = null;
+    // }
     if (this.clickOverlayGroup) {
       this.clickOverlayGroup.clearLayers();
     }
@@ -849,14 +842,14 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // --- Color helper for heatmap ---
-  getHeatColor(value: number): string {
-    if (value >= 0.75) return '#e74c3c';
-    if (value >= 0.60) return '#e67e22';
-    if (value >= 0.45) return '#f1c40f';
-    if (value >= 0.30) return '#2ecc71';
-    return '#27ae60';
-  }
+  // // --- Color helper for heatmap (kept for future restore) ---
+  // getHeatColor(value: number): string {
+  //   if (value >= 0.75) return '#e74c3c';
+  //   if (value >= 0.60) return '#e67e22';
+  //   if (value >= 0.45) return '#f1c40f';
+  //   if (value >= 0.30) return '#2ecc71';
+  //   return '#27ae60';
+  // }
 
   // --- Urgency color helper ---
   getUrgencyColor(urgency: string): string {
