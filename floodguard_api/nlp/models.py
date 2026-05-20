@@ -12,11 +12,6 @@ class Report(models.Model):
     DISASTER_TYPES = [
         ('flooding', 'Flooding'),
         ('storm', 'Storm'),
-        ('landslide', 'Landslide'),
-        ('tree_damage', 'Tree Damage'),
-        ('fire', 'Fire'),
-        ('earthquake', 'Earthquake'),
-        ('unknown', 'Unknown'),
     ]
 
     report_text = models.TextField()
