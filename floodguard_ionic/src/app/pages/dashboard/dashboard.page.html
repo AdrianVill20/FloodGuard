@@ -77,24 +77,24 @@
         <button class="fg-layer-btn"
                 [class.is-active]="activeLayer === 'flood'"
                 (click)="switchLayer('flood')">
-          🌊 Flood Risk Zones
+          Flood Risk Zones
         </button>
         <button class="fg-layer-btn"
                 [class.is-active]="activeLayer === 'ndvi'"
                 (click)="switchLayer('ndvi')">
-          🌿 NDVI
+          NDVI
         </button>
         
         <button class="fg-layer-btn"
                 [class.is-active]="showBoundaries"
                 (click)="toggleBoundaries()">
-          {{ showBoundaries ? '🗺 Borders On' : '🗺 Borders Off' }}
+          {{ showBoundaries ? 'Borders On' : 'Borders Off' }}
         </button>
 
         <button class="fg-layer-btn"
                 [class.is-active]="heatmapVisible"
                 (click)="toggleHeatmap()">
-          {{ heatmapVisible ? '👁 Dots On' : '🚫 Dots Off' }}
+          {{ heatmapVisible ? 'Dots On' : 'Dots Off' }}
         </button>
         
         <button class="fg-layer-btn" (click)="resetMap()">
@@ -108,7 +108,7 @@
       
       <div class="fg-map-legend fg-glass" style="width: 300px;">
         <p class="fg-eyebrow" style="margin-bottom: 12px; border-bottom: 2px solid #e0e0e0; padding-bottom: 8px;">
-          📊 {{ activeLayer === 'flood' ? 'Flood Risk Index' : 'NDVI (Vegetation Health)' }}
+          {{ activeLayer === 'flood' ? 'Flood Risk Index' : 'NDVI (Vegetation Health)' }}
         </p>
         
         <!-- Flood Risk Legend -->
@@ -192,17 +192,17 @@
           <button class="fg-speed-btn"
                   [class.is-active]="animationSpeed === 'slow'"
                   (click)="changeAnimationSpeed('slow')">
-            🐢 Slow
+            Slow
           </button>
           <button class="fg-speed-btn"
                   [class.is-active]="animationSpeed === 'medium'"
                   (click)="changeAnimationSpeed('medium')">
-            ⚡ Med
+            Mid
           </button>
           <button class="fg-speed-btn"
                   [class.is-active]="animationSpeed === 'fast'"
                   (click)="changeAnimationSpeed('fast')">
-            🚀 Fast
+            Fast
           </button>
         </div>
       </div>
@@ -284,7 +284,7 @@
         autocorrect="off"
         spellcheck="false"
       />
-      <kbd class="fg-kbd">⌘K</kbd>
+      <kbd class="fg-kbd">⌘</kbd>
     </div>
 
     <div class="fg-slider-dock fg-glass" style="margin: 8px 16px 0">
