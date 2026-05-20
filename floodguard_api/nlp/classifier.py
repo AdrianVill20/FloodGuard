@@ -69,7 +69,7 @@ SEVERITY_HIGH = [
     "emergency", "critical", "danger", "urgent",
     "water rising", "rising water", "nalunod", "lubog",
     "trapped", "drowning", "rescue", "tabang",
-    "tulong", "saklolo", "delikado",
+    "tulong", "saklolo", "delikado", "landslide",
 ]
 
 SEVERITY_MEDIUM = [
@@ -314,19 +314,11 @@ def detect_disaster_type(tokens, matched_keywords):
     text = ' '.join(tokens)
 
     # Check for specific disaster types
-    if any(w in text for w in ["landslide", "landslide"]):
-        return "landslide"
     if any(w in text for w in ["storm", "bagyo", "typhoon", "surge"]):
         return "storm"
     if any(w in text for w in ["flood", "baha", "water", "rain", "overflow",
                                 "umaapaw", "rising", "mataas", "lubog"]):
         return "flooding"
-    if any(w in text for w in ["trees", "tree", "lesser trees", "vegetation"]):
-        return "tree_damage"
-    if any(w in text for w in ["fire", "sunog"]):
-        return "fire"
-    if any(w in text for w in ["earthquake", "linog"]):
-        return "earthquake"
 
     return "flooding"
 
