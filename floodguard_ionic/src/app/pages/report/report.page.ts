@@ -34,7 +34,7 @@ export class ReportPage {
     this.result    = null;
     this.errorMsg  = '';
 
-    this.api.classifyMessage(this.message).subscribe({
+    this.api.submitReport(this.message).subscribe({
       next: (response) => {
         this.result    = response.data;
         this.isLoading = false;
@@ -46,10 +46,10 @@ export class ReportPage {
     });
   }
 
-  getUrgencyColor(): string {
+  getSeverityColor(): string {
     if (!this.result) return 'primary';
-    if (this.result.urgency === 'HIGH')   return 'danger';
-    if (this.result.urgency === 'MEDIUM') return 'warning';
+    if (this.result.severity === 'high')   return 'danger';
+    if (this.result.severity === 'medium') return 'warning';
     return 'success';
   }
 

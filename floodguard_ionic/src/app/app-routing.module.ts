@@ -7,10 +7,10 @@ const routes: Routes = [
     redirectTo: 'dashboard',
     pathMatch: 'full'
   },
-  // {
-  //   path: 'report',
-  //   loadChildren: () => import('./pages/report/report.module').then( m => m.ReportPageModule)
-  // },
+  {
+    path: 'report',
+    loadChildren: () => import('./pages/report/report.module').then( m => m.ReportPageModule)
+  },
   {
     path: 'dashboard',
     loadChildren: () => import('./pages/dashboard/dashboard.module').then( m => m.DashboardPageModule)

@@ -5,11 +5,13 @@
 import json
 import os
 from django.conf import settings
+from django.utils import timezone
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .classifier import classify_message
+from .classifier import classify_message, analyze_report
+from .models import Report
 
 # ----------------------------------------------------------
 # ENDPOINT 1: Health Check
@@ -328,6 +330,171 @@ def get_year_snapshot(request, year):
             "data"    : snapshot
         })
 
+    except Exception as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+# ----------------------------------------------------------
+# ENDPOINT 9: Analyze report text with enhanced NLP
+# POST /api/nlp/analyze/
+# Body: { "message": "lahug is flooding" }
+# ----------------------------------------------------------
+@api_view(['POST'])
+def nlp_analyze(request):
+    try:
+        message = request.data.get('message', '').strip()
+
+        if not message:
+            return Response(
+                {"error": "No message provided"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        result = analyze_report(message)
+
+        return Response({
+            "status": "success",
+            "data": result
+        })
+
+    except Exception as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+# ----------------------------------------------------------
+# ENDPOINT 10: Submit a new report (analyze + store)
+# POST /api/reports/
+# Body: { "message": "lahug is flooding" }
+# ----------------------------------------------------------
+@api_view(['POST'])
+def submit_report(request):
+    try:
+        message = request.data.get('message', '').strip()
+
+        if not message:
+            return Response(
+                {"error": "No message provided"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Analyze the report
+        analysis = analyze_report(message)
+
+        # Create and store the report
+        report = Report.objects.create(
+            report_text=message,
+            detected_barangay=analysis.get('barangay'),
+            severity=analysis.get('severity', 'low'),
+            disaster_type=analysis.get('disaster_type', 'flooding'),
+            confidence=analysis.get('confidence', 0.0),
+            keywords=analysis.get('keywords', []),
+            matched_entities=analysis.get('matched_entities', []),
+            user=request.user if request.user.is_authenticated else None,
+        )
+
+        return Response({
+            "status": "success",
+            "message": "Report submitted successfully",
+            "data": {
+                "id": report.id,
+                "report_text": report.report_text,
+                "barangay": report.detected_barangay,
+                "severity": report.severity,
+                "disaster_type": report.disaster_type,
+                "confidence": report.confidence,
+                "keywords": report.keywords,
+                "matched_entities": report.matched_entities,
+                "reported_at": report.reported_at.isoformat(),
+            }
+        }, status=status.HTTP_201_CREATED)
+
+    except Exception as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+# ----------------------------------------------------------
+# ENDPOINT 11: List all reports
+# GET /api/reports/
+# Query params: ?severity=high&barangay=lahug
+# ----------------------------------------------------------
+@api_view(['GET'])
+def list_reports(request):
+    try:
+        reports = Report.objects.all()
+
+        # Filtering
+        severity = request.query_params.get('severity')
+        barangay = request.query_params.get('barangay')
+        disaster = request.query_params.get('disaster_type')
+
+        if severity:
+            reports = reports.filter(severity=severity.lower())
+        if barangay:
+            reports = reports.filter(detected_barangay__iexact=barangay)
+        if disaster:
+            reports = reports.filter(disaster_type=disaster.lower())
+
+        data = []
+        for report in reports:
+            data.append({
+                "id": report.id,
+                "report_text": report.report_text,
+                "barangay": report.detected_barangay,
+                "severity": report.severity,
+                "disaster_type": report.disaster_type,
+                "confidence": report.confidence,
+                "keywords": report.keywords,
+                "matched_entities": report.matched_entities,
+                "reported_at": report.reported_at.isoformat(),
+            })
+
+        return Response({
+            "status": "success",
+            "total": len(data),
+            "data": data
+        })
+
+    except Exception as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+# ----------------------------------------------------------
+# ENDPOINT 12: Get a specific report by ID
+# GET /api/reports/<id>/
+# ----------------------------------------------------------
+@api_view(['GET'])
+def get_report(request, report_id):
+    try:
+        report = Report.objects.get(id=report_id)
+
+        return Response({
+            "status": "success",
+            "data": {
+                "id": report.id,
+                "report_text": report.report_text,
+                "barangay": report.detected_barangay,
+                "severity": report.severity,
+                "disaster_type": report.disaster_type,
+                "confidence": report.confidence,
+                "keywords": report.keywords,
+                "matched_entities": report.matched_entities,
+                "reported_at": report.reported_at.isoformat(),
+            }
+        })
+
+    except Report.DoesNotExist:
+        return Response(
+            {"error": "Report not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
     except Exception as e:
         return Response(
             {"error": str(e)},

@@ -58,4 +58,30 @@ export class ApiService {
   getYearSnapshot(year: number): Observable<any> {
     return this.http.get(`${this.baseUrl}/barangays/timeseries/all/${year}/`);
   }
+
+  // --- NLP Enhanced Analysis ---
+  // Analyze a report text with enhanced NLP (no storage)
+  analyzeReport(message: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/nlp/analyze/`, { message });
+  }
+
+  // Submit a report (analyze + store in database)
+  submitReport(message: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/reports/submit/`, { message });
+  }
+
+  // List all reports (with optional filters)
+  getReports(severity?: string, barangay?: string): Observable<any> {
+    let params = '';
+    const filters: string[] = [];
+    if (severity) filters.push(`severity=${encodeURIComponent(severity)}`);
+    if (barangay) filters.push(`barangay=${encodeURIComponent(barangay)}`);
+    if (filters.length) params = '?' + filters.join('&');
+    return this.http.get(`${this.baseUrl}/reports/${params}`);
+  }
+
+  // Get a specific report by ID
+  getReport(id: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/reports/${id}/`);
+  }
 }

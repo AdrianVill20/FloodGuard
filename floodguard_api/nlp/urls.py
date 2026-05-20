@@ -18,4 +18,10 @@ urlpatterns = [
          views.get_barangay_timeseries,     name='barangay_timeseries'),
     path('barangays/timeseries/all/<int:year>/',
          views.get_year_snapshot,           name='year_snapshot'),
+    # NLP analysis endpoints
+    path('nlp/analyze/',                    views.nlp_analyze,           name='nlp_analyze'),
+    # Report CRUD endpoints
+    path('reports/',                        views.list_reports,          name='list_reports'),
+    path('reports/submit/',                 views.submit_report,         name='submit_report'),
+    path('reports/<int:report_id>/',        views.get_report,            name='get_report'),
 ]

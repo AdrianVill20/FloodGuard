@@ -95,22 +95,22 @@
   <!-- ── Result Card ───────────────────────────────────────── -->
   <div class="fg-result fg-card"
        *ngIf="result"
-       [class.is-danger]="result.urgency === 'HIGH'"
-       [class.is-warning]="result.urgency === 'MEDIUM'"
-       [class.is-info]="result.urgency === 'LOW'">
+       [class.is-danger]="result.severity === 'high'"
+       [class.is-warning]="result.severity === 'medium'"
+       [class.is-info]="result.severity === 'low'">
 
     <!-- Result header -->
     <div class="fg-result__head">
       <span class="fg-chip"
-            [class.fg-chip--danger]="result.urgency === 'HIGH'"
-            [class.fg-chip--warning]="result.urgency === 'MEDIUM'"
-            [class.fg-chip--primary]="result.urgency === 'LOW'">
-        {{ result.urgency === 'HIGH'   ? '🚨 HIGH URGENCY' :
-           result.urgency === 'MEDIUM' ? '⚠️ MODERATE URGENCY' :
-                                         'ℹ️ LOW URGENCY' }}
+            [class.fg-chip--danger]="result.severity === 'high'"
+            [class.fg-chip--warning]="result.severity === 'medium'"
+            [class.fg-chip--primary]="result.severity === 'low'">
+        {{ result.severity === 'high'   ? 'HIGH URGENCY' :
+           result.severity === 'medium' ? 'MODERATE URGENCY' :
+                                          'LOW URGENCY' }}
       </span>
       <span class="fg-mono fg-result__conf">
-        NLP Confidence {{ result.confidence || '—' }}
+        NLP Confidence {{ result.confidence ? (result.confidence * 100 | number:'1.0-0') + '%' : '—' }}
       </span>
     </div>
 
@@ -118,26 +118,35 @@
     <div class="fg-result__grid">
 
       <div class="fg-result__field">
-        <p class="fg-eyebrow">Location Detected</p>
-        <p class="fg-result__value">{{ result.location || 'Not detected' }}</p>
+        <p class="fg-eyebrow">Detected Barangay</p>
+        <p class="fg-result__value">{{ result.barangay || 'Not detected' }}</p>
       </div>
 
       <div class="fg-result__field">
-        <p class="fg-eyebrow">Urgency Level</p>
-        <p class="fg-result__value">{{ result.urgency }}</p>
+        <p class="fg-eyebrow">Severity Level</p>
+        <p class="fg-result__value">{{ result.severity | titlecase }}</p>
       </div>
 
       <div class="fg-result__field">
-        <p class="fg-eyebrow">Language Detected</p>
-        <p class="fg-result__value">{{ result.language }}</p>
+        <p class="fg-eyebrow">Disaster Type</p>
+        <p class="fg-result__value">{{ result.disaster_type | titlecase }}</p>
+      </div>
+
+      <div class="fg-result__field">
+        <p class="fg-eyebrow">Matched Keywords</p>
+        <p class="fg-result__value">{{ result.keywords?.join(', ') || 'None' }}</p>
       </div>
 
     </div>
 
-    <!-- Generated Alert -->
-    <div class="fg-result__alert" *ngIf="result.alert">
-      <p class="fg-eyebrow">Generated Alert</p>
-      <p class="fg-result__alert-text">{{ result.alert }}</p>
+    <!-- Entities -->
+    <div class="fg-result__entities" *ngIf="result.matched_entities?.length">
+      <p class="fg-eyebrow">Entities Detected</p>
+      <div class="fg-entity-chips">
+        <span class="fg-chip fg-chip--neutral" *ngFor="let e of result.matched_entities">
+          {{ e }}
+        </span>
+      </div>
     </div>
 
   </div>

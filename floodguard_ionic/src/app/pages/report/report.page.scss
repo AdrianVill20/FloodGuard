@@ -261,6 +261,26 @@ ion-content {
   line-height: 1.7;
 }
 
+/* ── Entities ──────────────────────────────────────────────── */
+.fg-result__entities {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--fg-border);
+}
+
+.fg-entity-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.fg-result__conf {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--fg-text-muted);
+}
+
 /* ── Responsive ───────────────────────────────────────────── */
 @media (max-width: 480px) {
   .fg-report-nav {

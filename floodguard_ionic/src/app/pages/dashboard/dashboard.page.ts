@@ -63,6 +63,17 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
   reports          : any[]   = [];
   reportLoading    : boolean = false;
 
+  // NLP Tab state
+  nlpReports       : any[]   = [];
+  nlpLoading       : boolean = false;
+  nlpFilterSeverity: string  = '';
+  nlpFilterBarangay: string  = '';
+
+  // Map report markers
+  reportMarkersGroup : any    = null;
+  selectedNlpReport  : any    = null;
+  highlightLayer     : any    = null;
+
   // Map
   private map               : any;
   private geojsonLayer      : any;
@@ -96,6 +107,7 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.loadBarangays();
     this.loadReports();
+    this.loadNlpReports();
   }
 
   ngAfterViewInit() {
@@ -272,6 +284,154 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  // --- Load NLP reports ---
+  loadNlpReports() {
+    this.nlpLoading = true;
+    this.api.getReports().subscribe({
+      next: (response: any) => {
+        this.nlpReports = response.data;
+        this.nlpLoading = false;
+        this.renderNlpReportMarkers();
+      },
+      error: () => { this.nlpLoading = false; }
+    });
+  }
+
+  // --- Filter NLP reports ---
+  getFilteredNlpReports(): any[] {
+    let filtered = this.nlpReports;
+    if (this.nlpFilterSeverity) {
+      filtered = filtered.filter(r => r.severity === this.nlpFilterSeverity);
+    }
+    if (this.nlpFilterBarangay) {
+      filtered = filtered.filter(r =>
+        r.barangay?.toLowerCase().includes(this.nlpFilterBarangay.toLowerCase())
+      );
+    }
+    return filtered;
+  }
+
+  // --- Render report markers on the map ---
+  renderNlpReportMarkers() {
+    if (!this.map) return;
+
+    // Remove existing markers
+    if (this.reportMarkersGroup) {
+      this.map.removeLayer(this.reportMarkersGroup);
+    }
+
+    this.reportMarkersGroup = L.layerGroup();
+
+    // Get barangay map data for centroids
+    this.api.getBarangayMap().subscribe({
+      next: (geojson: any) => {
+        const centroidCache: any = {};
+
+        geojson.features.forEach((f: any) => {
+          const name = f.properties.barangay;
+          const layer = L.geoJSON(f);
+          const center = layer.getBounds().getCenter();
+          centroidCache[name] = center;
+        });
+
+        this.nlpReports.forEach((report: any) => {
+          if (!report.barangay) return;
+
+          const center = centroidCache[report.barangay];
+          if (!center) return;
+
+          const severity = report.severity || 'low';
+          const color = severity === 'high' ? '#ef4444' :
+                        severity === 'medium' ? '#f59e0b' : '#10b981';
+
+          const marker = L.circleMarker(center, {
+            radius: 10,
+            fillColor: color,
+            fillOpacity: 0.8,
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+          });
+
+          const confPct = report.confidence ? (report.confidence * 100).toFixed(0) + '%' : 'N/A';
+
+          marker.bindPopup(`
+            <div style="font-family: sans-serif; min-width: 180px;">
+              <strong style="font-size: 14px; color: ${color};">${report.barangay}</strong>
+              <hr style="margin: 4px 0; border: none; border-top: 1px solid #eee;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 12px;">
+                <span style="color: #666;">Severity:</span>
+                <span style="font-weight: 600; color: ${color};">${severity.toUpperCase()}</span>
+                <span style="color: #666;">Disaster:</span>
+                <span style="font-weight: 600;">${(report.disaster_type || 'N/A').replace(/_/g, ' ')}</span>
+                <span style="color: #666;">Confidence:</span>
+                <span style="font-weight: 600;">${confPct}</span>
+                <span style="color: #666;">Report:</span>
+                <span style="font-weight: 600; font-style: italic;">"${report.report_text?.substring(0, 50)}${report.report_text?.length > 50 ? '...' : ''}"</span>
+              </div>
+            </div>
+          `, { autoPan: false });
+
+          marker.on('click', () => {
+            this.selectedNlpReport = report;
+            this.highlightBarangayOnMap(report.barangay);
+          });
+
+          this.reportMarkersGroup.addLayer(marker);
+        });
+
+        this.reportMarkersGroup.addTo(this.map);
+      }
+    });
+  }
+
+  // --- Highlight a barangay on the map ---
+  highlightBarangayOnMap(barangayName: string) {
+    if (!this.map) return;
+
+    // Remove previous highlight
+    if (this.highlightLayer) {
+      this.map.removeLayer(this.highlightLayer);
+    }
+
+    this.api.getBarangayMap().subscribe({
+      next: (geojson: any) => {
+        const feature = geojson.features.find(
+          (f: any) => f.properties.barangay.toLowerCase() === barangayName.toLowerCase()
+        );
+
+        if (!feature) return;
+
+        const severity = this.selectedNlpReport?.severity || 'low';
+        const color = severity === 'high' ? '#ef4444' :
+                      severity === 'medium' ? '#f59e0b' : '#10b981';
+
+        this.highlightLayer = L.geoJSON(feature, {
+          style: {
+            fillColor: color,
+            fillOpacity: 0.3,
+            color: color,
+            weight: 3,
+            opacity: 0.8,
+          }
+        }).addTo(this.map);
+
+        const bounds = L.geoJSON(feature).getBounds();
+        this.map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+      }
+    });
+  }
+
+  // --- Clear NLP highlight ---
+  clearNlpHighlight() {
+    if (this.highlightLayer) {
+      this.map.removeLayer(this.highlightLayer);
+      this.highlightLayer = null;
+    }
+    this.selectedNlpReport = null;
+    this.map.setView([10.3157, 123.8854], 12);
+  }
+
   // --- Init map ---
   initMap() {
     if (this.map) return;
@@ -292,6 +452,9 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
 
     // Initialize the invisible click overlay group
     this.clickOverlayGroup = L.layerGroup().addTo(this.map);
+
+    // Initialize report markers group
+    this.reportMarkersGroup = L.layerGroup();
 
     const baseMaps = {
       "Standard View" : standardMap,
@@ -840,6 +1003,13 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
         if (this.map) this.map.invalidateSize();
       }, 300);
     }
+    if (tab === 'nlp') {
+      this.loadNlpReports();
+      // Add report markers to map if map exists
+      if (this.map && this.nlpReports.length > 0) {
+        this.renderNlpReportMarkers();
+      }
+    }
   }
 
   // // --- Color helper for heatmap (kept for future restore) ---
@@ -863,6 +1033,20 @@ export class DashboardPage implements OnInit, AfterViewInit, OnDestroy {
     if (risk === 'HIGH')     return 'danger';
     if (risk === 'MODERATE') return 'warning';
     return 'success';
+  }
+
+  // --- Severity badge color for NLP ---
+  getSeverityBadgeColor(severity: string): string {
+    if (severity === 'high')   return 'danger';
+    if (severity === 'medium') return 'warning';
+    return 'success';
+  }
+
+  // --- Severity color hex ---
+  getSeverityColor(severity: string): string {
+    if (severity === 'high')   return '#ef4444';
+    if (severity === 'medium') return '#f59e0b';
+    return '#10b981';
   }
 
   // ============================================================

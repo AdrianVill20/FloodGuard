@@ -59,6 +59,10 @@
               (click)="switchTab('list')">
         Barangays
       </button>
+      <button role="tab" [class.is-active]="selectedTab === 'nlp'"
+              (click)="switchTab('nlp')">
+        NLP Reports
+      </button>
     </div>
     <span class="fg-chip fg-chip--primary">80 Barangays</span>
   </div>
@@ -150,6 +154,23 @@
           <div style="display: flex; gap: 4px; align-items: center;">
             <div style="width: 20px; height: 20px; background: #27ae60; border-radius: 3px;"></div>
             <span><strong>Healthy</strong> (0.40+)</span>
+          </div>
+        </div>
+
+        <!-- Report Markers Legend (shown when NLP reports exist) -->
+        <div *ngIf="nlpReports.length > 0" style="margin-top: 12px; border-top: 1px solid var(--fg-border); padding-top: 10px;">
+          <p class="fg-eyebrow" style="margin-bottom: 6px;">NLP Report Markers</p>
+          <div style="display: flex; gap: 4px; align-items: center; margin-bottom: 4px; font-size: 11px;">
+            <div style="width: 12px; height: 12px; background: #ef4444; border-radius: 50%; border: 2px solid #fff;"></div>
+            <span>High Severity</span>
+          </div>
+          <div style="display: flex; gap: 4px; align-items: center; margin-bottom: 4px; font-size: 11px;">
+            <div style="width: 12px; height: 12px; background: #f59e0b; border-radius: 50%; border: 2px solid #fff;"></div>
+            <span>Medium Severity</span>
+          </div>
+          <div style="display: flex; gap: 4px; align-items: center; font-size: 11px;">
+            <div style="width: 12px; height: 12px; background: #10b981; border-radius: 50%; border: 2px solid #fff;"></div>
+            <span>Low Severity</span>
           </div>
         </div>
       </div>
@@ -414,6 +435,114 @@
           <p class="fg-report-card__alert-text">{{ report.alert }}</p>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ── NLP Reports Tab ──────────────────────────────────── -->
+  <div [hidden]="selectedTab !== 'nlp'" class="fg-nlp-section">
+
+    <!-- Filters -->
+    <div class="fg-nlp-filters">
+      <div class="fg-nlp-filter-group">
+        <label class="fg-eyebrow">Filter by Severity</label>
+        <div class="fg-nlp-filter-chips">
+          <button class="fg-filter-chip"
+                  [class.is-active]="nlpFilterSeverity === ''"
+                  (click)="nlpFilterSeverity = ''">
+            All
+          </button>
+          <button class="fg-filter-chip fg-chip--danger"
+                  [class.is-active]="nlpFilterSeverity === 'high'"
+                  (click)="nlpFilterSeverity = 'high'">
+            High
+          </button>
+          <button class="fg-filter-chip fg-chip--warning"
+                  [class.is-active]="nlpFilterSeverity === 'medium'"
+                  (click)="nlpFilterSeverity = 'medium'">
+            Medium
+          </button>
+          <button class="fg-filter-chip fg-chip--success"
+                  [class.is-active]="nlpFilterSeverity === 'low'"
+                  (click)="nlpFilterSeverity = 'low'">
+            Low
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="fg-loading-box" *ngIf="nlpLoading">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Loading NLP reports…</p>
+    </div>
+
+    <!-- Empty state -->
+    <div class="fg-empty" *ngIf="!nlpLoading && nlpReports.length === 0">
+      <p class="fg-eyebrow">No NLP reports yet</p>
+      <p style="color: var(--fg-text-dim); font-size: 12px; margin-top: 4px;">
+        Submit a report from the Report page to see NLP analysis here.
+      </p>
+    </div>
+
+    <!-- Report Grid -->
+    <div class="fg-nlp-grid" *ngIf="!nlpLoading">
+      <div class="fg-nlp-card fg-card"
+           *ngFor="let report of getFilteredNlpReports()"
+           [class.is-high]="report.severity === 'high'"
+           [class.is-medium]="report.severity === 'medium'"
+           [class.is-low]="report.severity === 'low'"
+           (click)="selectedNlpReport = report; highlightBarangayOnMap(report.barangay)"
+           [class.is-selected]="selectedNlpReport?.id === report.id">
+
+        <div class="fg-nlp-card__head">
+          <span class="fg-chip"
+                [class.fg-chip--danger]="report.severity === 'high'"
+                [class.fg-chip--warning]="report.severity === 'medium'"
+                [class.fg-chip--success]="report.severity === 'low'">
+            {{ report.severity | titlecase }}
+          </span>
+          <span class="fg-mono fg-nlp-card__conf">
+            {{ report.confidence ? (report.confidence * 100 | number:'1.0-0') + '%' : 'N/A' }}
+          </span>
+        </div>
+
+        <div class="fg-nlp-card__body">
+          <div class="fg-nlp-card__location">
+            <ion-icon name="location-outline"></ion-icon>
+            <strong>{{ report.barangay || 'Unknown Barangay' }}</strong>
+          </div>
+          <p class="fg-nlp-card__message">&ldquo;{{ report.report_text }}&rdquo;</p>
+        </div>
+
+        <div class="fg-nlp-card__meta">
+          <span class="fg-chip fg-chip--neutral">
+            <ion-icon name="alert-circle-outline" style="font-size: 10px"></ion-icon>
+            {{ (report.disaster_type || 'unknown') | titlecase }}
+          </span>
+          <span class="fg-chip fg-chip--neutral" *ngIf="report.matched_entities?.length > 0">
+            <ion-icon name="pricetags-outline" style="font-size: 10px"></ion-icon>
+            {{ report.matched_entities?.join(', ') }}
+          </span>
+          <span class="fg-chip fg-chip--neutral" *ngIf="report.keywords?.length > 0">
+            <ion-icon name="key-outline" style="font-size: 10px"></ion-icon>
+            {{ report.keywords?.slice(0, 3)?.join(', ') }}{{ report.keywords?.length > 3 ? '...' : '' }}
+          </span>
+          <span class="fg-chip fg-chip--neutral fg-mono" style="font-size: 9px;">
+            {{ report.reported_at ? (report.reported_at | date:'short') : '' }}
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Map integration hint -->
+    <div class="fg-nlp-map-hint" *ngIf="nlpReports.length > 0">
+      <p class="fg-eyebrow">
+        <ion-icon name="map-outline"></ion-icon>
+        Click a report card to highlight barangay on the map &mdash;
+        <button class="fg-btn fg-btn--ghost" style="display: inline; padding: 0; font-size: inherit;"
+                (click)="switchTab('map')">Open Map</button>
+      </p>
     </div>
   </div>
   </ion-content>
