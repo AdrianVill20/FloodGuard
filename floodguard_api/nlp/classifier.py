@@ -69,7 +69,7 @@ SEVERITY_HIGH = [
     "emergency", "critical", "danger", "urgent",
     "water rising", "rising water", "nalunod", "lubog",
     "trapped", "drowning", "rescue", "tabang",
-    "tulong", "saklolo", "delikado", "landslide",
+    "tulong", "saklolo", "delikado", "landslide", "baha",
 ]
 
 SEVERITY_MEDIUM = [
