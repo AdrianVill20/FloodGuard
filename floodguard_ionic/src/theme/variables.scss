@@ -1,21 +1,21 @@
 /* ============================================================
-   FloodGuard ASEAN — Professional Blue & White Theme
+   FloodGuard ASEAN — Government Green & Gold Theme
    ============================================================ */
 
 :root {
-  /* Primary — Government Blue */
-  --ion-color-primary        : #1a56a0;
-  --ion-color-primary-rgb    : 26, 86, 160;
+  /* Primary — Government Green */
+  --ion-color-primary        : #2d5f2e;
+  --ion-color-primary-rgb    : 45, 95, 46;
   --ion-color-primary-contrast: #ffffff;
-  --ion-color-primary-shade  : #174a8c;
-  --ion-color-primary-tint   : #3168aa;
+  --ion-color-primary-shade  : #1f4620;
+  --ion-color-primary-tint   : #3d7f3f;
 
-  /* Secondary — Light Blue */
-  --ion-color-secondary        : #2980b9;
-  --ion-color-secondary-rgb    : 41, 128, 185;
-  --ion-color-secondary-contrast: #ffffff;
-  --ion-color-secondary-shade  : #2472a4;
-  --ion-color-secondary-tint   : #3e8dc0;
+  /* Secondary — Gold Accent */
+  --ion-color-secondary        : #daa520;
+  --ion-color-secondary-rgb    : 218, 165, 32;
+  --ion-color-secondary-contrast: #2d5f2e;
+  --ion-color-secondary-shade  : #b8941a;
+  --ion-color-secondary-tint   : #e0b338;
 
   /* Danger — Alert Red */
   --ion-color-danger        : #c0392b;
@@ -39,15 +39,15 @@
   --ion-color-success-tint   : #35905b;
 
   /* Background */
-  --ion-background-color     : #f0f4f8;
-  --ion-background-color-rgb : 240, 244, 248;
+  --ion-background-color     : #f8f9fa;
+  --ion-background-color-rgb : 248, 249, 250;
 
   /* Text */
   --ion-text-color           : #1a252f;
   --ion-text-color-rgb       : 26, 37, 47;
 
   /* Toolbar */
-  --ion-toolbar-background   : #1a56a0;
+  --ion-toolbar-background   : #2d5f2e;
   --ion-toolbar-color        : #ffffff;
 
   /* Cards */
