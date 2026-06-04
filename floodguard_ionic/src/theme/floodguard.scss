@@ -8,29 +8,32 @@
 
 :root {
   /* ── Surfaces ─────────────────────────────────────────── */
-  --fg-bg:           #0F172A;
-  --fg-sidebar:      #0B1220;
-  --fg-card:         #1E293B;
-  --fg-card-2:       #172033;
-  --fg-popover:      #1F2A3D;
-  --fg-border:       #1F2937;
-  --fg-border-2:     #283449;
+  --fg-bg:           #f8f9fa;
+  --fg-sidebar:      #2d5f2e;
+  --fg-card:         #ffffff;
+  --fg-card-2:       #f8f9fa;
+  --fg-popover:      #ffffff;
+  --fg-border:       #e0e0e0;
+  --fg-border-2:     #d0d0d0;
 
   /* ── Text ─────────────────────────────────────────────── */
-  --fg-text:         #E2E8F0;
-  --fg-text-muted:   #94A3B8;
-  --fg-text-dim:     #64748B;
+  --fg-text:         #1a252f;
+  --fg-text-muted:   #666666;
+  --fg-text-dim:     #999999;
 
   /* ── Accent + Status ──────────────────────────────────── */
-  --fg-primary:      #38BDF8;
-  --fg-primary-ink:  #0F172A;
+  --fg-primary:      #2d5f2e;
+  --fg-primary-ink:  #ffffff;
+  --fg-accent:       #daa520;
+  --fg-accent-dark:  #b8941a;
   --fg-warning:      #F59E0B;
   --fg-danger:       #EF4444;
   --fg-success:      #10B981;
-  --fg-info:         #38BDF8;
+  --fg-info:         #2d5f2e;
 
   /* ── Tints (15 %) ─────────────────────────────────────── */
-  --fg-primary-15:   rgba(56, 189, 248, 0.15);
+  --fg-primary-15:   rgba(45, 95, 46, 0.15);
+  --fg-accent-15:    rgba(218, 165, 32, 0.15);
   --fg-warning-15:   rgba(245, 158,  11, 0.15);
   --fg-danger-15:    rgba(239,  68,  68, 0.15);
   --fg-success-15:   rgba( 16, 185, 129, 0.15);
@@ -60,6 +63,7 @@
   --ion-tab-bar-background:         var(--fg-sidebar);
   --ion-border-color:               var(--fg-border);
   --ion-item-border-color:          var(--fg-border);
+  --ion-item-color:                 var(--fg-text);
 }
 
 /* ── Base ──────────────────────────────────────────────── */
@@ -152,11 +156,17 @@ ion-content {
   border-color: var(--fg-border);
   &:hover:not(:disabled) { border-color: var(--fg-border-2); color: var(--fg-text); }
 }
+.fg-btn--gold {
+  background: var(--fg-accent);
+  color: var(--fg-primary);
+  font-weight: 700;
+  &:hover:not(:disabled) { box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.25); background: var(--fg-accent-dark); }
+}
 
 /* ── Utility: Progress Bar ────────────────────────────── */
 .fg-bar {
   height: 6px;
-  background: var(--fg-card-2);
+  background: #333333;
   border-radius: 999px;
   overflow: hidden;
   > div {

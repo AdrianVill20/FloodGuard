@@ -42,9 +42,9 @@
    ============================================================ */
 
 ion-header ion-toolbar {
-  --background: #1a56a0;
+  --background: #2d5f2e;
   --color: #ffffff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 0 0 #daa520, 0 2px 8px rgba(0,0,0,0.3);
 }
 
 ion-title {
@@ -62,6 +62,19 @@ ion-button {
   font-weight: 600;
   letter-spacing: 0.3px;
   border-radius: 8px;
+  --background: #2d5f2e;
+  --color: #ffffff;
+}
+
+ion-button.gold, ion-button[color="gold"] {
+  --background: #daa520;
+  --color: #2d5f2e;
+  font-weight: 700;
+}
+
+ion-button:not(.gold):not([color="danger"]):not([color="warning"]):not([color="success"]):not([color="secondary"]):not([color="tertiary"]) {
+  --background: #2d5f2e;
+  --color: #ffffff;
 }
 
 ion-badge {
@@ -76,5 +89,23 @@ ion-item {
 
 /* Page background */
 ion-content {
-  --background: #f0f4f8;
+  --background: #f8f9fa;
+}
+
+/* Text contrast on light backgrounds */
+ion-item {
+  --color: #1a252f;
+}
+
+ion-label {
+  color: #1a252f !important;
+}
+
+ion-text {
+  color: #1a252f;
+}
+
+/* Ensure headings are visible */
+h1, h2, h3, h4, h5, h6 {
+  color: #1a252f !important;
 }

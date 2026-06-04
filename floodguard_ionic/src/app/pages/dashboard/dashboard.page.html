@@ -8,20 +8,12 @@
   </div>
   <div class="fg-header__right">
     <div class="fg-status-pill"></div>
-    <button class="fg-btn fg-btn--ghost" routerLink="/report">
+    <button class="fg-btn fg-btn--gold" routerLink="/report">
       <ion-icon name="megaphone-outline"></ion-icon>
     </button>
   </div>
 </header>
 <ion-content>
-  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
-    <ion-refresher-content
-      pullingIcon="chevron-down-circle-outline"
-      pullingText="Pull to refresh data"
-      refreshingSpinner="crescent"
-      refreshingText="Refreshing…">
-    </ion-refresher-content>
-  </ion-refresher>
 
   <div class="fg-ticker" *ngIf="summary.HIGH > 0">
     <span class="fg-eyebrow fg-ticker__label">Active Alert</span>
@@ -110,50 +102,50 @@
     <div class="fg-map-wrap">
       <div id="flood-map"></div>
       
-      <div class="fg-map-legend fg-glass" style="width: 300px;">
-        <p class="fg-eyebrow" style="margin-bottom: 12px; border-bottom: 2px solid #e0e0e0; padding-bottom: 8px;">
+      <div class="fg-map-legend fg-glass" style="width: 300px; background: rgba(45, 95, 46, 0.9); backdrop-filter: blur(8px);">
+        <p class="fg-eyebrow" style="margin-bottom: 12px; border-bottom: 2px solid rgba(255,255,255,0.2); padding-bottom: 8px; color: #ffffff;">
           {{ activeLayer === 'flood' ? 'Flood Risk Index' : 'NDVI (Vegetation Health)' }}
         </p>
         
         <!-- Flood Risk Legend -->
         <div *ngIf="activeLayer === 'flood'" style="font-size: 12px;">
-          <p style="margin: 0 0 8px 0; color: #666; font-size: 11px;">Flood Risk by Year ({{ sliderYear }})</p>
+          <p style="margin: 0 0 8px 0; color: #ffffff; font-size: 11px;">Flood Risk by Year ({{ sliderYear }})</p>
           <div style="display: flex; gap: 4px; align-items: center; margin-bottom: 4px;">
             <div style="width: 20px; height: 20px; background: #27ae60; border-radius: 3px;"></div>
-            <span><strong>Low</strong> (0.0-0.40)</span>
+            <span style="color: #ffffff;"><strong>Low</strong> (0.0-0.40)</span>
           </div>
           <div style="display: flex; gap: 4px; align-items: center; margin-bottom: 4px;">
             <div style="width: 20px; height: 20px; background: #f1c40f; border-radius: 3px;"></div>
-            <span><strong>Moderate</strong> (0.40-0.60)</span>
+            <span style="color: #ffffff;"><strong>Moderate</strong> (0.40-0.60)</span>
           </div>
           <div style="display: flex; gap: 4px; align-items: center; margin-bottom: 4px;">
             <div style="width: 20px; height: 20px; background: #e67e22; border-radius: 3px;"></div>
-            <span><strong>High</strong> (0.60-0.75)</span>
+            <span style="color: #ffffff;"><strong>High</strong> (0.60-0.75)</span>
           </div>
           <div style="display: flex; gap: 4px; align-items: center;">
             <div style="width: 20px; height: 20px; background: #e74c3c; border-radius: 3px;"></div>
-            <span><strong>Critical</strong> (0.75+)</span>
+            <span style="color: #ffffff;"><strong>Critical</strong> (0.75+)</span>
           </div>
         </div>
 
         <!-- NDVI Legend -->
         <div *ngIf="activeLayer === 'ndvi'" style="font-size: 12px;">
-          <p style="margin: 0 0 8px 0; color: #666; font-size: 11px;">Vegetation Health by Year ({{ sliderYear }})<br/><span style="font-size: 10px; color: #999;">Higher NDVI = More Forest</span></p>
+          <p style="margin: 0 0 8px 0; color: #ffffff; font-size: 11px;">Vegetation Health by Year ({{ sliderYear }})<br/><span style="font-size: 10px; color: #e0e0e0;">Higher NDVI = More Forest</span></p>
           <div style="display: flex; gap: 4px; align-items: center; margin-bottom: 4px;">
             <div style="width: 20px; height: 20px; background: #e74c3c; border-radius: 3px;"></div>
-            <span><strong>Severe</strong> (NDVI &lt; 0.20)</span>
+            <span style="color: #ffffff;"><strong>Severe</strong> (NDVI &lt; 0.20)</span>
           </div>
           <div style="display: flex; gap: 4px; align-items: center; margin-bottom: 4px;">
             <div style="width: 20px; height: 20px; background: #e67e22; border-radius: 3px;"></div>
-            <span><strong>Moderate</strong> (0.20-0.30)</span>
+            <span style="color: #ffffff;"><strong>Moderate</strong> (0.20-0.30)</span>
           </div>
           <div style="display: flex; gap: 4px; align-items: center; margin-bottom: 4px;">
             <div style="width: 20px; height: 20px; background: #f1c40f; border-radius: 3px;"></div>
-            <span><strong>Fair</strong> (0.30-0.40)</span>
+            <span style="color: #ffffff;"><strong>Fair</strong> (0.30-0.40)</span>
           </div>
           <div style="display: flex; gap: 4px; align-items: center;">
             <div style="width: 20px; height: 20px; background: #27ae60; border-radius: 3px;"></div>
-            <span><strong>Healthy</strong> (0.40+)</span>
+            <span style="color: #ffffff;"><strong>Healthy</strong> (0.40+)</span>
           </div>
         </div>
 
@@ -491,7 +483,7 @@
            [class.is-high]="report.severity === 'high'"
            [class.is-medium]="report.severity === 'medium'"
            [class.is-low]="report.severity === 'low'"
-           (click)="selectedNlpReport = report; highlightBarangayOnMap(report.barangay)"
+           (click)="switchTab('map'); selectedNlpReport = report; highlightBarangayOnMap(report.barangay)"
            [class.is-selected]="selectedNlpReport?.id === report.id">
 
         <div class="fg-nlp-card__head">
